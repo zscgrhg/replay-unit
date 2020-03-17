@@ -24,7 +24,7 @@ public class InvocationContext {
     public final Map<Long, Invocation> map = new HashMap<>();
 
 
-    public InvocationContext getCurrent() {
+    public static InvocationContext getCurrent() {
         InvocationContext current = CONTEXT.get();
         if (current == null) {
             CONTEXT.set(new InvocationContext());

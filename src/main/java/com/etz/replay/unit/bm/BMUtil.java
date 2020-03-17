@@ -144,6 +144,7 @@ public class BMUtil {
             System.out.println("BMUnit : loading agent id = " + id);
             Properties properties = new Properties();
             properties.setProperty("org.jboss.byteman.transform.all","true");
+            properties.setProperty("org.jboss.byteman.debug","true");
             Submit submit = new Submit(getHost(), getPort());
             int size = properties.size();
             String[] proparray = new String[size];
