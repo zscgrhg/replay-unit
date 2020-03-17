@@ -15,8 +15,7 @@ BIND invocation:com.etz.replay.unit.context.Invocation=new com.etz.replay.unit.c
 IF true
 DO   traceln("invocation in");
     invocation.setMethod("doBusiness");
-    invocation.setArgs(_args);
-    com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation);
+    com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation,_args);
 ENDRULE
 
 
@@ -40,8 +39,7 @@ BIND invocation:com.etz.replay.unit.context.Invocation=new com.etz.replay.unit.c
 IF true
 DO   traceln("invocation in1");
     invocation.setMethod("getAName");
-    invocation.setArgs(_args);
-    com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation);
+    com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation,_args);
 ENDRULE
 
 

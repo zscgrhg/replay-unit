@@ -7,6 +7,6 @@ public class AOuterServiceImpl implements AOuterService {
     @Override
     public String getAName(String aid) {
 
-        return "name is A";
+        return "shout";
     }
 }

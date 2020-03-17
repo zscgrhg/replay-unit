@@ -33,7 +33,7 @@ public class InvocationContext {
     }
 
 
-    public void push(Invocation invocation) {
+    public void push(Invocation invocation,Object[] args) {
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
             invocation.parentId = parent.id;
@@ -42,7 +42,7 @@ public class InvocationContext {
         stack.push(invocation);
         map.put(invocation.id, invocation);
         ParamInfo p = new ParamInfo();
-        p.args = invocation.args;
+        p.args = args;
         p.invocationId = invocation.id;
         p.name = "in";
         paramWriter.write(p);
@@ -50,12 +50,11 @@ public class InvocationContext {
 
     public void pop(Object[] args, Object returnValue, Throwable exception) {
         Invocation pop = stack.pop();
-        pop.setReturnValue(returnValue);
-        pop.setThrown(exception);
-        pop.setArgs(args);
         ParamInfo atExit = new ParamInfo();
         atExit.invocationId = pop.id;
         atExit.args = args;
+        atExit.returned=returnValue;
+        atExit.thrown=exception;
         atExit.name = "out";
         paramWriter.write(atExit);
         if (stack.isEmpty()) {

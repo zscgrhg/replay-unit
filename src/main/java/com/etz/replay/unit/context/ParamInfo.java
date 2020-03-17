@@ -7,4 +7,6 @@ public class ParamInfo {
     Long invocationId;
     Object[] args;
     String name;
+    Object returned;
+    Throwable thrown;
 }
