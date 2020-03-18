@@ -19,6 +19,7 @@ public class App {
         BMUtil.loadAgent();
         BMUtil.submitText(MustacheRule.buildRuleForClass(HelloWordTestServiceImpl.class));
         BMUtil.submitText(MustacheRule.buildRuleForClass(AOuterServiceImpl.class));
+        TimeUnit.SECONDS.sleep(1);
         for (int i = 0; i < 1; i++) {
             TimeUnit.SECONDS.sleep(1);
             HelloWordTestService subject = new HelloWordTestServiceImpl();

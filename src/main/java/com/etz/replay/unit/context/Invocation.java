@@ -19,7 +19,15 @@ public class Invocation {
     @JsonIgnore
     public Object thisRef;
     public String refPath;
-    public Class declaredType;
-    public boolean isStatic = false;
+    public Class clazz;
+    public boolean staticInvoke = false;
+    public boolean subject = false;
     List<InvocationContext> spawnContext = new ArrayList<>();
+
+    public boolean identity(Invocation other) {
+        if (other.thisRef == null || thisRef == null) {
+            return false;
+        }
+        return thisRef == other.thisRef;
+    }
 }

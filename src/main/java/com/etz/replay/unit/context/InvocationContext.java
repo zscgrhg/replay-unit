@@ -33,12 +33,17 @@ public class InvocationContext {
     }
 
 
-    public void push(Invocation invocation,Object[] args) {
+    public void push(Invocation invocation, Object[] args) {
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
             invocation.parentId = parent.id;
             parent.getChildren().add(invocation);
+            boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
+            invocation.setSubject(!notSubject && invocation.getClazz().isAnnotationPresent(Subject.class));
+        } else {
+            invocation.setSubject(invocation.getClazz().isAnnotationPresent(Subject.class));
         }
+
         stack.push(invocation);
         map.put(invocation.id, invocation);
         ParamInfo p = new ParamInfo();
@@ -53,8 +58,8 @@ public class InvocationContext {
         ParamInfo atExit = new ParamInfo();
         atExit.invocationId = pop.id;
         atExit.args = args;
-        atExit.returned=returnValue;
-        atExit.thrown=exception;
+        atExit.returned = returnValue;
+        atExit.thrown = exception;
         atExit.name = "out";
         paramWriter.write(atExit);
         if (stack.isEmpty()) {
@@ -65,7 +70,7 @@ public class InvocationContext {
 
 
     public List<Invocation> getNodes() {
-        List<Invocation> root = map.values().stream().filter(p -> p.getParentId() == null).collect(Collectors.toList());
+        List<Invocation> root = map.values().stream().filter(Invocation::isSubject).collect(Collectors.toList());
         return root;
     }
 

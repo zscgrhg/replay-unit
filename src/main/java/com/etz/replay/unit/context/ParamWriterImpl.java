@@ -1,6 +1,5 @@
 package com.etz.replay.unit.context;
 
-import com.etz.replay.unit.bm.BMUtil;
 import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
@@ -8,6 +7,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 public class ParamWriterImpl implements ParamWriter {
     public static final File workspace = new File("data").toPath().resolve(Long.toHexString(System.currentTimeMillis())).toFile();
@@ -30,9 +30,14 @@ public class ParamWriterImpl implements ParamWriter {
     @SneakyThrows
     @Override
     public void write(InvocationContext context) {
-        Path file = workspace.toPath().resolve(context.id + ".ctx.json");
-        Files.copy(new ByteArrayInputStream(JsonUtil.toJsonString(context.getNodes()).getBytes("UTF8")),
-                file,
-                StandardCopyOption.REPLACE_EXISTING);
+
+        List<Invocation> nodes = context.getNodes();
+        for (Invocation node : nodes) {
+            Path file = workspace.toPath().resolve(node.id + ".subject.json");
+            Files.copy(new ByteArrayInputStream(JsonUtil.toJsonString(node).getBytes("UTF8")),
+                    file,
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
+
     }
 }

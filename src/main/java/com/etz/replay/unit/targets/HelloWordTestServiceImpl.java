@@ -1,7 +1,9 @@
 package com.etz.replay.unit.targets;
 
 
+import com.etz.replay.unit.context.Subject;
 
+@Subject
 public class HelloWordTestServiceImpl implements HelloWordTestService {
 
     AOuterService aOuterService = new AOuterServiceImpl();
