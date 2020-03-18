@@ -10,9 +10,9 @@ public class HelloWordTestServiceImpl implements HelloWordTestService {
     public String doBusiness(String req) {
 
 
-        String aName = aOuterService.getAName(req+" delegate to aOuterService");
+        String aName = aOuterService.getAName(new String[]{req + " delegate to aOuterService"});
         for (int i = 0; i < 3; i++) {
-            aOuterService.getAName(req+" delegate to aOuterService");
+            aOuterService.getAName(new String[]{req + " delegate to aOuterService"});
         }
         return aName;
     }

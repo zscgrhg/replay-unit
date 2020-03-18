@@ -1,0 +1,11 @@
+RULE entry {{methodSignure}}
+CLASS ^{{className}}
+METHOD {{method}}
+AT ENTRY
+BIND invocation:com.etz.replay.unit.context.Invocation=new com.etz.replay.unit.context.Invocation();
+_args:Object[]=java.util.stream.Stream.of($*).skip(1).toArray()
+IF true
+DO   traceln("entry : {{className}}::{{methodSignure}}");
+invocation.setMethod("{{methodSimpleName}}");
+com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation,_args);
+ENDRULE

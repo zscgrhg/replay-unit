@@ -1,0 +1,9 @@
+RULE exception exit {{methodSignure}}
+CLASS ^{{className}}
+METHOD {{method}}
+AT EXCEPTION EXIT
+BIND   _args:Object[]=java.util.stream.Stream.of($*).skip(1).toArray()
+IF true
+DO   traceln("exception exit : {{className}}::{{methodSignure}}");
+com.etz.replay.unit.context.InvocationContext.getCurrent().pop(_args,null,$^);
+ENDRULE

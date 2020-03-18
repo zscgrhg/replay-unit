@@ -4,6 +4,7 @@ import com.sun.tools.attach.AgentInitializationException;
 import lombok.SneakyThrows;
 import org.jboss.byteman.agent.install.Install;
 import org.jboss.byteman.agent.install.VMInfo;
+import org.jboss.byteman.agent.submit.ScriptText;
 import org.jboss.byteman.agent.submit.Submit;
 
 import java.io.File;
@@ -143,8 +144,8 @@ public class BMUtil {
         try {
             System.out.println("BMUnit : loading agent id = " + id);
             Properties properties = new Properties();
-            properties.setProperty("org.jboss.byteman.transform.all","true");
-            properties.setProperty("org.jboss.byteman.debug","true");
+            properties.setProperty("org.jboss.byteman.transform.all", "true");
+            properties.setProperty("org.jboss.byteman.debug", "true");
             Submit submit = new Submit(getHost(), getPort());
             int size = properties.size();
             String[] proparray = new String[size];
@@ -160,20 +161,39 @@ public class BMUtil {
 
 
     }
+
     @SneakyThrows
-    public static void submitFile(String btm){
+    public static void submitFile(String btm) {
         Submit submit = new Submit(getHost(), getPort());
-        List<String> files =  new ArrayList<String>();
+        List<String> files = new ArrayList<String>();
         files.add(btm);
         System.out.println("BMUnit : loading file script = " + btm);
         submit.addRulesFromFiles(files);
     }
+
     @SneakyThrows
-    public static void unload(String btm){
+    public static void unload(String btm) {
         Submit submit = new Submit(getHost(), getPort());
-        List<String> files =  new ArrayList<String>();
+        List<String> files = new ArrayList<String>();
         files.add(btm);
         System.out.println("BMUnit : unloading file script = " + btm);
         submit.deleteRulesFromFiles(files);
     }
+
+
+    @SneakyThrows
+    public static void submitText(List<ScriptText> scripts) {
+        Submit submit = new Submit(getHost(), getPort());
+
+        submit.addScripts(scripts);
+    }
+
+    @SneakyThrows
+    public static void unloadText(List<ScriptText> scripts) {
+        Submit submit = new Submit(getHost(), getPort());
+
+        submit.deleteScripts(scripts);
+    }
+
+
 }

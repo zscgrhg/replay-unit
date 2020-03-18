@@ -1,0 +1,9 @@
+RULE exit  {{methodSignure}}
+CLASS ^{{className}}
+METHOD {{method}}
+AT EXIT
+BIND   _args:Object[]=java.util.stream.Stream.of($*).skip(1).toArray()
+IF true
+DO   traceln("exit : {{className}}::{{methodSignure}}");
+com.etz.replay.unit.context.InvocationContext.getCurrent().pop(_args,$!,null);
+ENDRULE
