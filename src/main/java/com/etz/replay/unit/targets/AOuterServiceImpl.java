@@ -9,7 +9,6 @@ public class AOuterServiceImpl implements AOuterService {
         for (int i = 0; i < aid.length; i++) {
             aid[i] = "haa!!" + aid[i];
         }
-
         return "shout";
     }
 }

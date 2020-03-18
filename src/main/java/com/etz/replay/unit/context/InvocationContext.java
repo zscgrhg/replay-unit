@@ -60,6 +60,9 @@ public class InvocationContext {
         atExit.args = args;
         atExit.returned = returnValue;
         atExit.thrown = exception;
+        if (exception != null) {
+            atExit.exception = exception.getClass().getName();
+        }
         atExit.name = "out";
         paramWriter.write(atExit);
         if (stack.isEmpty()) {

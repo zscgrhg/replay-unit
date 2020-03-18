@@ -9,4 +9,5 @@ public class ParamInfo {
     String name;
     Object returned;
     Throwable thrown;
+    String exception;
 }

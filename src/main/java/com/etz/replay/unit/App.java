@@ -21,10 +21,14 @@ public class App {
         BMUtil.submitText(MustacheRule.buildRuleForClass(AOuterServiceImpl.class));
         TimeUnit.SECONDS.sleep(1);
         for (int i = 0; i < 1; i++) {
-            TimeUnit.SECONDS.sleep(1);
-            HelloWordTestService subject = new HelloWordTestServiceImpl();
-            String s = subject.doBusiness("argv" + i);
-            System.out.println(s);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                HelloWordTestService subject = new HelloWordTestServiceImpl();
+                String s = subject.doBusiness("argv" + i);
+                System.out.println(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
