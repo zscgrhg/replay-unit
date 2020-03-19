@@ -6,5 +6,5 @@ BIND   _args:Object[]=java.util.stream.Stream.of($*).skip(1).toArray()
 IF true
 DO   traceln("exit : {{className}}::{{methodSignure}}");
 com.etz.replay.unit.context.InvocationContext.getCurrent().pop(_args,$!,null);
-com.etz.replay.unit.classmap.ClassManager.cleanObjectsRef($0);
+com.etz.replay.unit.classmap.SubjectContext.cleanObjectsRef($0);
 ENDRULE

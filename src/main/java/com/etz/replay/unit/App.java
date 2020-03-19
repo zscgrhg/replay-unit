@@ -1,7 +1,7 @@
 package com.etz.replay.unit;
 
 import com.etz.replay.unit.bm.BMUtil;
-import com.etz.replay.unit.classmap.ClassManager;
+import com.etz.replay.unit.classmap.SubjectContext;
 import com.etz.replay.unit.targets.HelloWordTestService;
 import com.etz.replay.unit.targets.HelloWordTestServiceImpl;
 import com.etz.replay.unit.targets.ProvidedA;
@@ -16,7 +16,7 @@ public class App {
 
 
         BMUtil.loadAgent();
-        ClassManager.loadFromPkg(pkg);
+        SubjectContext.loadFromPkg(pkg);
 
         TimeUnit.SECONDS.sleep(1);
         for (int i = 0; i < 1; i++) {

@@ -1,6 +1,6 @@
 package com.etz.replay.unit.context;
 
-import com.etz.replay.unit.classmap.ClassManager;
+import com.etz.replay.unit.classmap.SubjectContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -35,7 +35,7 @@ public class Invocation {
 
     public void setThisRef(Object thisRef) {
         this.thisRef = thisRef;
-        this.refPath = ClassManager.refPathOf(thisRef);
+        this.refPath = SubjectContext.refPathOf(thisRef);
     }
 
     public void setRefPath(String refPath) {

@@ -13,20 +13,20 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ClassManager {
-    public static final Map<Class, Map<String, ObjectInfoProtype>> CLASS_METAINFO = new ConcurrentHashMap<>();
-    public static final ThreadLocal<Stack<SubjectInfo>> REF_CONTEXT = new ThreadLocal<>();
+public class SubjectContext {
+    public static final Map<Class, Map<String, ObjectInfoProtype>> SUBJECT_CLASS_CONTEXT = new ConcurrentHashMap<>();
+    public static final ThreadLocal<Stack<SubjectInfo>> SUBJECT_REFS_CONTEXT = new ThreadLocal<>();
     static TestSubjectSelector tss = new DefaultTestSubjectSelectorImpl();
     static ProvidedSelector ps = new DefaultProvidedSelectorImpl();
 
     @SneakyThrows
     public static void saveObjectsRef(Object subject, String methodSignure, Object[] args) {
         Class<?> aClass = subject.getClass();
-        boolean isSubject = CLASS_METAINFO.containsKey(aClass);
+        boolean isSubject = SUBJECT_CLASS_CONTEXT.containsKey(aClass);
         if (isSubject) {
             SubjectInfo subjectInfo = new SubjectInfo();
             subjectInfo.setSubject(subject);
-            Map<String, ObjectInfoProtype> refMap = CLASS_METAINFO.get(aClass);
+            Map<String, ObjectInfoProtype> refMap = SUBJECT_CLASS_CONTEXT.get(aClass);
             Map<String, Object> argMap = new HashMap<>();
             if (args != null && args.length > 0) {
 
@@ -49,10 +49,10 @@ public class ClassManager {
                     refs.put(feildValue, value);
                 }
             }
-            Stack<SubjectInfo> stack = REF_CONTEXT.get();
+            Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
             if (stack == null) {
                 stack = new Stack<>();
-                REF_CONTEXT.set(stack);
+                SUBJECT_REFS_CONTEXT.set(stack);
             }
             stack.push(subjectInfo);
         }
@@ -60,10 +60,10 @@ public class ClassManager {
 
     public static void cleanObjectsRef(Object subject) {
         Class<?> aClass = subject.getClass();
-        boolean isSubject = CLASS_METAINFO.containsKey(aClass);
+        boolean isSubject = SUBJECT_CLASS_CONTEXT.containsKey(aClass);
 
         if (isSubject) {
-            Stack<SubjectInfo> stack = REF_CONTEXT.get();
+            Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
             SubjectInfo subjectInfo = stack.lastElement();
 
             if (stack != null) {
@@ -74,7 +74,7 @@ public class ClassManager {
     }
 
     public static String refPathOf(Object thisRef) {
-        Stack<SubjectInfo> stack = REF_CONTEXT.get();
+        Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
         if (stack != null) {
             SubjectInfo subjectInfo = stack.lastElement();
             Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
@@ -105,12 +105,12 @@ public class ClassManager {
 
             if (tss.select(clz)) {
                 BMUtil.submitText(MustacheRuleUtil.buildRuleForClass(clz));
-                CLASS_METAINFO.putIfAbsent(clz, new HashMap<>());
+                SUBJECT_CLASS_CONTEXT.putIfAbsent(clz, new HashMap<>());
                 Field[] fields = clz.getDeclaredFields();
 
                 for (Field field : fields) {
                     if (ps.selectField(clz, field)) {
-                        Map<String, ObjectInfoProtype> subMap = CLASS_METAINFO.get(clz);
+                        Map<String, ObjectInfoProtype> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
                         ObjectInfoProtype obj = new ObjectInfoProtype();
                         obj.setType(ObjectInfoProtype.Type.FIELD);
                         Class<?> type = field.getType();
@@ -138,7 +138,7 @@ public class ClassManager {
         for (int i = 0; i < parameters.length; i++) {
             Parameter param = parameters[i];
             if (ps.selectArg(clz, method, param)) {
-                Map<String, ObjectInfoProtype> subMap = CLASS_METAINFO.get(clz);
+                Map<String, ObjectInfoProtype> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
                 ObjectInfoProtype obj = new ObjectInfoProtype();
                 obj.setType(ObjectInfoProtype.Type.ARG);
                 Class<?> type = param.getType();
@@ -156,7 +156,7 @@ public class ClassManager {
     }
 
     public static boolean isSubject(Class clazz) {
-        return CLASS_METAINFO.containsKey(clazz);
+        return SUBJECT_CLASS_CONTEXT.containsKey(clazz);
     }
 
 

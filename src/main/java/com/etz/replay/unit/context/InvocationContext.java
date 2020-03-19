@@ -1,6 +1,6 @@
 package com.etz.replay.unit.context;
 
-import com.etz.replay.unit.classmap.ClassManager;
+import com.etz.replay.unit.classmap.SubjectContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -35,7 +35,7 @@ public class InvocationContext {
 
 
     public void push(Invocation invocation, Object[] args) {
-        boolean subject = ClassManager.isSubject(invocation.getClazz());
+        boolean subject = SubjectContext.isSubject(invocation.getClazz());
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
             invocation.parentId = parent.id;
