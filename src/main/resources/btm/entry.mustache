@@ -9,5 +9,6 @@ DO   traceln("entry : {{className}}::{{methodSignure}}");
 invocation.setMethod("{{methodSimpleName}}");
 invocation.setThisRef($0);
 invocation.setClazz({{className}}.class);
+com.etz.replay.unit.classmap.ClassManager.saveObjectsRef($0,"{{methodSignure}}",_args);
 com.etz.replay.unit.context.InvocationContext.getCurrent().push(invocation,_args);
 ENDRULE

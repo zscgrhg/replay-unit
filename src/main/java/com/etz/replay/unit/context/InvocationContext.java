@@ -1,5 +1,6 @@
 package com.etz.replay.unit.context;
 
+import com.etz.replay.unit.classmap.ClassManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -34,14 +35,15 @@ public class InvocationContext {
 
 
     public void push(Invocation invocation, Object[] args) {
+        boolean subject = ClassManager.isSubject(invocation.getClazz());
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
             invocation.parentId = parent.id;
             parent.getChildren().add(invocation);
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
-            invocation.setSubject(!notSubject && invocation.getClazz().isAnnotationPresent(Subject.class));
+            invocation.setSubject(!notSubject && subject);
         } else {
-            invocation.setSubject(invocation.getClazz().isAnnotationPresent(Subject.class));
+            invocation.setSubject(subject);
         }
 
         stack.push(invocation);

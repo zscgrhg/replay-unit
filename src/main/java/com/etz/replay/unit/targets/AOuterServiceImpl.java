@@ -1,8 +1,8 @@
 package com.etz.replay.unit.targets;
 
-import com.etz.replay.unit.context.Subject;
+import com.etz.replay.unit.context.TestSubject;
 
-@Subject
+@TestSubject
 public class AOuterServiceImpl implements AOuterService {
     @Override
     public String getAName(String[] aid) {

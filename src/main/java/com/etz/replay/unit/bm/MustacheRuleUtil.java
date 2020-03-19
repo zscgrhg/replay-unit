@@ -1,6 +1,5 @@
 package com.etz.replay.unit.bm;
 
-import com.etz.replay.unit.context.JsonUtil;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class MustacheRule {
+public class MustacheRuleUtil {
     @SneakyThrows
     public static String buildRule(String tmplName, Object context) {
         MustacheFactory mf = new DefaultMustacheFactory();
@@ -52,11 +51,5 @@ public class MustacheRule {
                 .map(m -> new RuleScope(clazz, m))
                 .flatMap(r -> Stream.of(buildEntryRule(r), buildExceptionRule(r), buildExitRule(r)))
                 .collect(Collectors.toList());
-    }
-
-    public static void main(String[] args) {
-        List<ScriptText> scriptTexts = buildRuleForClass(MustacheRule.class);
-        System.out.println(JsonUtil.toJsonString(scriptTexts));
-
     }
 }

@@ -1,16 +1,12 @@
 package com.etz.replay.unit.classmap;
 
 import lombok.Data;
+import lombok.experimental.Delegate;
 
 @Data
 public class ObjectInfo {
-    Type type;
-    String name;
-    int index;
-    Class declaredType;
+    @Delegate
+    final ObjectInfoProtype objectInfoProtype;
+    Object objRef;
 
-    enum Type {
-        FIELD,
-        ARG
-    }
 }
