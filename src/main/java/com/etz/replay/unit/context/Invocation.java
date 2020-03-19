@@ -1,5 +1,6 @@
 package com.etz.replay.unit.context;
 
+import com.etz.replay.unit.classmap.ClassManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class Invocation {
     public Long parentId;
     public Map<Object, String> refMap;
     public String method;
+    public String methodSignure;
     public List<Invocation> children = new ArrayList<>();
     @JsonIgnore
     public Object thisRef;
@@ -29,5 +31,14 @@ public class Invocation {
             return false;
         }
         return thisRef == other.thisRef;
+    }
+
+    public void setThisRef(Object thisRef) {
+        this.thisRef = thisRef;
+        this.refPath = ClassManager.refPathOf(thisRef);
+    }
+
+    public void setRefPath(String refPath) {
+
     }
 }

@@ -73,6 +73,20 @@ public class ClassManager {
         }
     }
 
+    public static String refPathOf(Object thisRef) {
+        Stack<SubjectInfo> stack = REF_CONTEXT.get();
+        if (stack != null) {
+            SubjectInfo subjectInfo = stack.lastElement();
+            Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
+
+            ObjectInfoProtype protype = refs.get(thisRef);
+            if (protype != null) {
+                return protype.name;
+            }
+        }
+        return null;
+    }
+
     public static void loadFromPkg(String... pkg) {
 
         try (ScanResult scanResult =
