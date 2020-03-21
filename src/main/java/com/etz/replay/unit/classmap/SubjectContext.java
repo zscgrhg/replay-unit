@@ -6,6 +6,8 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -14,6 +16,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SubjectContext {
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(SubjectContext.class);
+
+
     public static final Map<Class, Map<String, ObjectInfoProtype>> SUBJECT_CLASS_CONTEXT = new ConcurrentHashMap<>();
     public static final ThreadLocal<Stack<SubjectInfo>> SUBJECT_REFS_CONTEXT = new ThreadLocal<>();
     static TestSubjectSelector tss = new DefaultTestSubjectSelectorImpl();

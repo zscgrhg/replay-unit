@@ -3,6 +3,8 @@ package com.etz.replay.unit.context;
 import com.etz.replay.unit.classmap.SubjectContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,10 @@ import java.util.stream.Collectors;
 
 @Data
 public class InvocationContext {
+
+    private static final Logger LOGGER
+            = LoggerFactory.getLogger(InvocationContext.class);
+
     public final static ThreadLocal<InvocationContext> CONTEXT = new ThreadLocal<>();
 
     public static final AtomicLong CXT_INCR = new AtomicLong(1);
@@ -28,21 +34,32 @@ public class InvocationContext {
     @JsonIgnore
     public final Map<Long, Invocation> map = new HashMap<>();
 
+    public static InvocationContext getCurrent(boolean create) {
+        InvocationContext current = CONTEXT.get();
+        if (create && current == null) {
+            CONTEXT.set(new InvocationContext());
+        }
+        return CONTEXT.get();
+    }
 
-    public boolean entryIncr() {
+    public boolean entryIncr(String rule) {
+
         long prev = ENTRY_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
         if (length > prev) {
             ENTRY_COUNTER.set(length);
             EXIT_COUNTER.set(Integer.MAX_VALUE);
+            LOGGER.error(rule + " entryIncr");
             return true;
         }
         return false;
     }
 
-    public boolean entryMinus() {
+    public boolean entryMinus(String rule) {
+
         long prev = EXIT_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
+        LOGGER.error(rule + " entryMinus:" + prev + "/" + length + "@" + id);
         if (length < prev) {
             EXIT_COUNTER.set(length);
             ENTRY_COUNTER.set(Integer.MIN_VALUE);
@@ -51,17 +68,8 @@ public class InvocationContext {
         return false;
     }
 
-    public static InvocationContext getCurrent() {
-        InvocationContext current = CONTEXT.get();
-        if (current == null) {
-            CONTEXT.set(new InvocationContext());
-        }
-        return CONTEXT.get();
-    }
-
-
     public void push(Invocation invocation, Object[] args) {
-
+        LOGGER.error("entry stack");
         boolean subject = SubjectContext.isSubject(invocation.getClazz());
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
@@ -82,8 +90,9 @@ public class InvocationContext {
         paramWriter.write(p);
     }
 
-    public void pop(Object[] args, Object returnValue, Throwable exception) {
+    public void pop(String rule, Object[] args, Object returnValue, Throwable exception) {
 
+        LOGGER.error("POP>>" + rule);
         if (exception != null) {
             exception.printStackTrace();
             System.exit(1);

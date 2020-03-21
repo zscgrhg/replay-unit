@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Data
 public class Invocation {
     public static final AtomicLong INVOCATION_INCR = new AtomicLong(1);
+    private String threadId = getThreadNameId();
     public final Long id = INVOCATION_INCR.getAndIncrement();
     public Long parentId;
     public Map<Object, String> refMap;
@@ -25,6 +26,11 @@ public class Invocation {
     public boolean staticInvoke = false;
     public boolean subject = false;
     List<InvocationContext> spawnContext = new ArrayList<>();
+
+    public static String getThreadNameId() {
+        Thread thread = Thread.currentThread();
+        return thread.getName() + "@" + thread.getId();
+    }
 
     public boolean identity(Invocation other) {
         if (other.thisRef == null || thisRef == null) {

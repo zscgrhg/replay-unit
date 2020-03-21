@@ -7,7 +7,10 @@ import com.etz.replay.unit.targets.ServiceA;
 import com.etz.replay.unit.targets.ServiceAImpl;
 import com.etz.replay.unit.targets.ServiceData;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class App {
 
@@ -21,10 +24,10 @@ public class App {
 
         TimeUnit.SECONDS.sleep(3);
         ServiceA serviceA = new ServiceAImpl();
-        for (int i = 0; i < 1; i++) {
-            ServiceData serviceData = serviceA.doServiceA("t" + i, i);
+        List<ServiceData> collect = IntStream.range(1, 5).parallel().mapToObj(x -> {
+            ServiceData serviceData = serviceA.doServiceA("t" + x, x);
             System.out.println(JsonUtil.toJsonString(serviceData));
-            TimeUnit.SECONDS.sleep(1);
-        }
+            return serviceData;
+        }).collect(Collectors.toList());
     }
 }
