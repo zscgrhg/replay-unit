@@ -75,7 +75,7 @@ public class SubjectContext {
 
     public static String refPathOf(Object thisRef) {
         Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
-        if (stack != null) {
+        if (stack != null && !stack.isEmpty()) {
             SubjectInfo subjectInfo = stack.lastElement();
             Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
 

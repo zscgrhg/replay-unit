@@ -2,9 +2,10 @@ package com.etz.replay.unit;
 
 import com.etz.replay.unit.bm.BMUtil;
 import com.etz.replay.unit.classmap.SubjectContext;
-import com.etz.replay.unit.targets.HelloWordTestService;
-import com.etz.replay.unit.targets.HelloWordTestServiceImpl;
-import com.etz.replay.unit.targets.ProvidedA;
+import com.etz.replay.unit.context.JsonUtil;
+import com.etz.replay.unit.targets.ServiceA;
+import com.etz.replay.unit.targets.ServiceAImpl;
+import com.etz.replay.unit.targets.ServiceData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,16 +19,12 @@ public class App {
         BMUtil.loadAgent();
         SubjectContext.loadFromPkg(pkg);
 
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.SECONDS.sleep(3);
+        ServiceA serviceA = new ServiceAImpl();
         for (int i = 0; i < 1; i++) {
-            try {
-                TimeUnit.SECONDS.sleep(1);
-                HelloWordTestService subject = new HelloWordTestServiceImpl();
-                String s = subject.doBusiness("argv" + i, new ProvidedA());
-                System.out.println(s);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ServiceData serviceData = serviceA.doServiceA("t" + i, i);
+            System.out.println(JsonUtil.toJsonString(serviceData));
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 }

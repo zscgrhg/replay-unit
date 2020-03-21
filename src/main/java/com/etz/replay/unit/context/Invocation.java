@@ -34,8 +34,12 @@ public class Invocation {
     }
 
     public void setThisRef(Object thisRef) {
-        this.thisRef = thisRef;
-        this.refPath = SubjectContext.refPathOf(thisRef);
+        try {
+            this.thisRef = thisRef;
+            this.refPath = SubjectContext.refPathOf(thisRef);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setRefPath(String refPath) {

@@ -1,10 +1,10 @@
 RULE entry {{methodSignure}}
-CLASS ^{{className}}
+{{TYPE}} ^{{className}}
 METHOD {{method}}
 AT ENTRY
 BIND invocation:com.etz.replay.unit.context.Invocation=new com.etz.replay.unit.context.Invocation();
 _args:Object[]=java.util.stream.Stream.of($*).skip(1).toArray()
-IF true
+IF com.etz.replay.unit.context.InvocationContext.getCurrent().entryIncr()
 DO   traceln("entry : {{className}}::{{methodSignure}}");
 invocation.setMethod("{{methodSimpleName}}");
 invocation.setMethodSignure("{{methodSignure}}");

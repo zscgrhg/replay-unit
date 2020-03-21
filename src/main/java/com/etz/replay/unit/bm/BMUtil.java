@@ -1,5 +1,6 @@
 package com.etz.replay.unit.bm;
 
+import com.etz.replay.unit.context.JsonUtil;
 import com.sun.tools.attach.AgentInitializationException;
 import lombok.SneakyThrows;
 import org.jboss.byteman.agent.install.Install;
@@ -184,7 +185,7 @@ public class BMUtil {
     @SneakyThrows
     public static void submitText(List<ScriptText> scripts) {
         Submit submit = new Submit(getHost(), getPort());
-
+        System.out.println(JsonUtil.toJsonString(scripts));
         submit.addScripts(scripts);
     }
 
