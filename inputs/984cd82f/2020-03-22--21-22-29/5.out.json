@@ -1,0 +1,17 @@
+{
+  "invocationId": 5,
+  "args": [
+    1
+  ],
+  "valuesType": [
+    "int"
+  ],
+  "argsType": [
+    "int"
+  ],
+  "name": "out",
+  "returned": 1,
+  "returnedValueType": "java.lang.Integer",
+  "thrown": null,
+  "exception": null
+}

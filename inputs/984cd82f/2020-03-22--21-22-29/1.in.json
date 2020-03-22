@@ -1,0 +1,20 @@
+{
+  "invocationId": 1,
+  "args": [
+    "t1",
+    1
+  ],
+  "valuesType": [
+    "java.lang.String",
+    "java.lang.Integer"
+  ],
+  "argsType": [
+    "java.lang.String",
+    "java.lang.Integer"
+  ],
+  "name": "in",
+  "returned": null,
+  "returnedValueType": null,
+  "thrown": null,
+  "exception": null
+}

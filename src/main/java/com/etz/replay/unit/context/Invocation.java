@@ -48,7 +48,4 @@ public class Invocation {
         }
     }
 
-    public void setRefPath(String refPath) {
-
-    }
 }

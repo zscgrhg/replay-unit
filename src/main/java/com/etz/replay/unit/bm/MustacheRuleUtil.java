@@ -1,15 +1,17 @@
 package com.etz.replay.unit.bm;
 
 import com.etz.replay.unit.context.JsonUtil;
-import com.github.mustachejava.DefaultMustacheFactory;
+import com.etz.replay.unit.factory.SpecModel;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import lombok.SneakyThrows;
 import org.jboss.byteman.agent.submit.ScriptText;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -17,9 +19,32 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MustacheRuleUtil {
+    public static final MustacheFactory mf = new DefaultTextMustacheFactory();
+
+    public static String render(String tmpl, Object... scopes) {
+        HashMap map = new HashMap();
+        for (int i = 0; i < scopes.length; i++) {
+            map.put(Integer.toString(i), scopes[i]);
+        }
+        StringWriter sw = new StringWriter();
+        Mustache mustache = mf.compile(new StringReader(tmpl), "example");
+        mustache.execute(sw, map);
+        sw.flush();
+        return sw.toString();
+    }
+
+    public static String renderSpec(SpecModel specModel) {
+        StringWriter sw = new StringWriter();
+        Mustache mustache = mf.compile("btm/spec.mustache");
+        mustache.execute(sw, specModel);
+        sw.flush();
+        return sw.toString();
+    }
+
+
     @SneakyThrows
     public static String buildRule(String tmplName, Object context) {
-        MustacheFactory mf = new DefaultMustacheFactory();
+
         Mustache m = mf.compile(tmplName);
 
         StringWriter writer = new StringWriter();

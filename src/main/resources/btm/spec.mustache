@@ -1,0 +1,18 @@
+package com.etz
+
+import spock.lang.Specification;
+import com.etz.replay.unit.context.JsonUtil;
+
+class {{name}}Spec extends Specification {
+void verify{{method}}() {
+given:
+{{subjectDecl}}
+{{#mockDecl}}
+    {{.}}
+{{/mockDecl}}
+when:
+{{action}}
+then:
+{{assertDecl}}
+}
+}

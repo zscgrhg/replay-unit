@@ -82,6 +82,7 @@ public class InvocationContext {
             if (!prev.finished) {
                 prev.getChildren().add(invocation);
             }
+
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
@@ -107,12 +108,10 @@ public class InvocationContext {
             STACK_THREAD_LOCAL.set(stack);
         }
         LOGGER.error("pop@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
-        if (exception != null) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
+
         Invocation pop = stack.pop();
         pop.finished = true;
+
         ParamInfo p = new ParamInfo();
         p.invocationId = pop.id;
         p.args = args;
@@ -129,6 +128,8 @@ public class InvocationContext {
         if (stack.isEmpty()) {
             paramWriter.write(this);
             CONTEXT.remove();
+        } else {
+            PREVIOUS.set(stack.lastElement());
         }
     }
 

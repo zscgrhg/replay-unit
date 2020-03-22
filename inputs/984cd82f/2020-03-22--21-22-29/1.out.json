@@ -1,0 +1,24 @@
+{
+  "invocationId": 1,
+  "args": [
+    "t1",
+    1
+  ],
+  "valuesType": [
+    "java.lang.String",
+    "java.lang.Integer"
+  ],
+  "argsType": [
+    "java.lang.String",
+    "java.lang.Integer"
+  ],
+  "name": "out",
+  "returned": {
+    "dataX": null,
+    "fromServiceB": "null<>null",
+    "fromServiceC": 1
+  },
+  "returnedValueType": "com.etz.replay.unit.targets.ServiceData",
+  "thrown": null,
+  "exception": null
+}

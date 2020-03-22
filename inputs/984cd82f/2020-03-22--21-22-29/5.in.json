@@ -1,0 +1,17 @@
+{
+  "invocationId": 5,
+  "args": [
+    1
+  ],
+  "valuesType": [
+    "int"
+  ],
+  "argsType": [
+    "int"
+  ],
+  "name": "in",
+  "returned": null,
+  "returnedValueType": null,
+  "thrown": null,
+  "exception": null
+}

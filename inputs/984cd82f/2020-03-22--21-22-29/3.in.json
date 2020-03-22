@@ -1,0 +1,20 @@
+{
+  "invocationId": 3,
+  "args": [
+    {
+      "fieldFromX": null,
+      "dataFromX": null
+    }
+  ],
+  "valuesType": [
+    "com.etz.replay.unit.targets.DataX"
+  ],
+  "argsType": [
+    "com.etz.replay.unit.targets.DataX"
+  ],
+  "name": "in",
+  "returned": null,
+  "returnedValueType": null,
+  "thrown": null,
+  "exception": null
+}
