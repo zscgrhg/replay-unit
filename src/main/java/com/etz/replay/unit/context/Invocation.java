@@ -25,7 +25,8 @@ public class Invocation {
     public Class clazz;
     public boolean staticInvoke = false;
     public boolean subject = false;
-    List<InvocationContext> spawnContext = new CopyOnWriteArrayList<>();
+
+    public volatile boolean finished = false;
 
     public Invocation() {
         this.threadId = Thread.currentThread().getId();

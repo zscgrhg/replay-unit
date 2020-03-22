@@ -78,14 +78,14 @@ public class InvocationContext {
         Invocation prev = PREVIOUS.get();
         if (prev != null) {
             invocation.parentId = prev.id;
-            prev.getChildren().add(invocation);
-
+            if (!prev.finished) {
+                prev.getChildren().add(invocation);
+            }
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
             invocation.setSubject(subject);
         }
-
         stack.push(invocation);
         PREVIOUS.set(invocation);
         map.put(invocation.id, invocation);
@@ -109,6 +109,7 @@ public class InvocationContext {
             System.exit(1);
         }
         Invocation pop = stack.pop();
+        pop.finished = true;
         ParamInfo atExit = new ParamInfo();
         atExit.invocationId = pop.id;
         atExit.args = args;
