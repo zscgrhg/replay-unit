@@ -47,6 +47,7 @@ public class InvocationContext {
 
         long prev = ENTRY_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
+        LOGGER.error(rule + ">>>" + prev + "/" + length + "@" + id);
         if (length > prev) {
             ENTRY_COUNTER.set(length);
             EXIT_COUNTER.set(Integer.MAX_VALUE);
@@ -59,6 +60,7 @@ public class InvocationContext {
 
         long prev = EXIT_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
+        LOGGER.error(rule + ">>>" + prev + "/" + length + "@" + id);
         if (length < prev) {
             EXIT_COUNTER.set(length);
             ENTRY_COUNTER.set(Integer.MIN_VALUE);
