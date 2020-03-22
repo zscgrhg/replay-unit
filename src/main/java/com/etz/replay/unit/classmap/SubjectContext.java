@@ -1,5 +1,6 @@
 package com.etz.replay.unit.classmap;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.etz.replay.unit.bm.BMUtil;
 import com.etz.replay.unit.bm.MustacheRuleUtil;
 import io.github.classgraph.ClassGraph;
@@ -21,7 +22,7 @@ public class SubjectContext {
 
 
     public static final Map<Class, Map<String, ObjectInfoProtype>> SUBJECT_CLASS_CONTEXT = new ConcurrentHashMap<>();
-    public static final ThreadLocal<Stack<SubjectInfo>> SUBJECT_REFS_CONTEXT = new ThreadLocal<>();
+    public static final TransmittableThreadLocal<Stack<SubjectInfo>> SUBJECT_REFS_CONTEXT = new TransmittableThreadLocal<>();
     static TestSubjectSelector tss = new DefaultTestSubjectSelectorImpl();
     static ProvidedSelector ps = new DefaultProvidedSelectorImpl();
 

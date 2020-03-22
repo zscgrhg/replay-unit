@@ -1,0 +1,28 @@
+RULE entry ttlwrapper ForkJoinPool$ForkJoinWorkerThreadFactory
+INTERFACE  ^ForkJoinPool$ForkJoinWorkerThreadFactory
+METHOD  newThread
+AT ENTRY
+IF   com.etz.replay.unit.bm.TtlUtil.setBarrier("^ForkJoinPool$ForkJoinWorkerThreadFactory.newThread")
+DO     traceStack("found the caller!\n", 10);
+    return com.etz.replay.unit.bm.TtlUtil.getFJPWrapper($0,$1);
+ENDRULE
+
+RULE EXIT ttlwrapper ForkJoinPool$ForkJoinWorkerThreadFactory EXIT
+INTERFACE  ^ForkJoinPool$ForkJoinWorkerThreadFactory
+METHOD  newThread
+AT EXIT
+IF   true
+DO
+      com.etz.replay.unit.bm.TtlUtil.cleanBarrier("^ForkJoinPool$ForkJoinWorkerThreadFactory.newThread")
+ENDRULE
+
+RULE EXCEPTION EXIT ttlwrapper ForkJoinPool$ForkJoinWorkerThreadFactory EXCEPTION EXIT
+INTERFACE  ^ForkJoinPool$ForkJoinWorkerThreadFactory
+METHOD  newThread
+AT EXCEPTION EXIT
+IF   true
+DO
+      com.etz.replay.unit.bm.TtlUtil.cleanBarrier("^ForkJoinPool$ForkJoinWorkerThreadFactory.newThread")
+ENDRULE
+
+

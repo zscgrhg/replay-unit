@@ -1,0 +1,29 @@
+RULE entry ttlwrapper Executor
+INTERFACE  ^java.util.concurrent.Executor
+METHOD  execute(java.lang.Runnable)
+AT ENTRY
+IF   com.etz.replay.unit.bm.TtlUtil.setBarrier("^Executor.execute")
+DO     System.out.println(">><<>><<>>");
+    $0.execute(com.alibaba.ttl.TtlRunnable.get($1));
+    return;
+ENDRULE
+
+RULE EXIT ttlwrapper Executor
+INTERFACE  ^java.util.concurrent.Executor
+METHOD  execute(java.lang.Runnable)
+AT EXIT
+IF   true
+DO
+      com.etz.replay.unit.bm.TtlUtil.cleanBarrier("^Executor.execute")
+ENDRULE
+
+RULE EXCEPTION EXIT ttlwrapper Executor
+INTERFACE  ^java.util.concurrent.Executor
+METHOD  execute(java.lang.Runnable)
+AT EXCEPTION EXIT
+IF   true
+DO
+      com.etz.replay.unit.bm.TtlUtil.cleanBarrier("^Executor.execute")
+ENDRULE
+
+

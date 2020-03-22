@@ -1,0 +1,13 @@
+RULE {{rule}}  {{location}}
+{{typeExpr}}
+METHOD  {{method}}
+{{location}}
+{{#bind}}
+    {{.}}
+{{/bind}}
+IF {{condition}}
+DO
+{{#action}}
+    {{.}}
+{{/action}}
+ENDRULE

@@ -1,5 +1,6 @@
 package com.etz.replay.unit.context;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.etz.replay.unit.classmap.SubjectContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class InvocationContext {
     private static final Logger LOGGER
             = LoggerFactory.getLogger(InvocationContext.class);
 
-    public final static ThreadLocal<InvocationContext> CONTEXT = new ThreadLocal<>();
+    public final static TransmittableThreadLocal<InvocationContext> CONTEXT = new TransmittableThreadLocal<>();
 
     public static final AtomicLong CXT_INCR = new AtomicLong(1);
     public final AtomicInteger ENTRY_COUNTER = new AtomicInteger(Integer.MIN_VALUE);
