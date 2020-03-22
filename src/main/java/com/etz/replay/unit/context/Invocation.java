@@ -4,7 +4,6 @@ import com.etz.replay.unit.classmap.SubjectContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Data
 public class Invocation {
     public static final AtomicLong INVOCATION_INCR = new AtomicLong(1);
-    private String threadId = getThreadNameId();
+    public final long threadId;
     public final Long id = INVOCATION_INCR.getAndIncrement();
     public Long parentId;
     public Map<Object, String> refMap;
@@ -26,11 +25,10 @@ public class Invocation {
     public Class clazz;
     public boolean staticInvoke = false;
     public boolean subject = false;
-    List<InvocationContext> spawnContext = new ArrayList<>();
+    List<InvocationContext> spawnContext = new CopyOnWriteArrayList<>();
 
-    public static String getThreadNameId() {
-        Thread thread = Thread.currentThread();
-        return thread.getName() + "@" + thread.getId();
+    public Invocation() {
+        this.threadId = Thread.currentThread().getId();
     }
 
     public boolean identity(Invocation other) {

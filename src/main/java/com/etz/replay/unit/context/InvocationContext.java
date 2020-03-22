@@ -79,6 +79,7 @@ public class InvocationContext {
         if (prev != null) {
             invocation.parentId = prev.id;
             prev.getChildren().add(invocation);
+
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
