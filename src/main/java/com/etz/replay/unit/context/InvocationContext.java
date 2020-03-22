@@ -7,10 +7,10 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -18,22 +18,20 @@ import java.util.stream.Collectors;
 @Data
 public class InvocationContext {
 
-    private static final Logger LOGGER
-            = LoggerFactory.getLogger(InvocationContext.class);
-
-    public final static TransmittableThreadLocal<InvocationContext> CONTEXT = new TransmittableThreadLocal<>();
-
+    public final static TransmittableThreadLocal<Invocation> PREVIOUS = new TransmittableThreadLocal<>();
     public static final AtomicLong CXT_INCR = new AtomicLong(1);
+    public final static ThreadLocal<InvocationContext> CONTEXT = new ThreadLocal<>();
+    public final static ThreadLocal<Stack<Invocation>> STACK_THREAD_LOCAL = new ThreadLocal<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvocationContext.class);
+
+
     public final AtomicInteger ENTRY_COUNTER = new AtomicInteger(Integer.MIN_VALUE);
     public final AtomicInteger EXIT_COUNTER = new AtomicInteger(Integer.MAX_VALUE);
 
     public final Long id = CXT_INCR.getAndIncrement();
-    public Invocation origin;
     final ParamWriter paramWriter = new ParamWriterImpl();
     @JsonIgnore
-    final Stack<Invocation> stack = new Stack<>();
-    @JsonIgnore
-    public final Map<Long, Invocation> map = new HashMap<>();
+    public final Map<Long, Invocation> map = new ConcurrentHashMap<>();
 
     public static InvocationContext getCurrent(boolean create) {
         InvocationContext current = CONTEXT.get();
@@ -69,12 +67,18 @@ public class InvocationContext {
         return false;
     }
 
-    public void push(Invocation invocation, Object[] args) {
+    public void push(String rule, Invocation invocation, Object[] args) {
+        Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
+        if (stack == null) {
+            stack = new Stack<>();
+            STACK_THREAD_LOCAL.set(stack);
+        }
+        LOGGER.error("push@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
         boolean subject = SubjectContext.isSubject(invocation.getClazz());
-        if (!stack.isEmpty()) {
-            Invocation parent = stack.lastElement();
-            invocation.parentId = parent.id;
-            parent.getChildren().add(invocation);
+        Invocation prev = PREVIOUS.get();
+        if (prev != null) {
+            invocation.parentId = prev.id;
+            prev.getChildren().add(invocation);
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
@@ -82,6 +86,7 @@ public class InvocationContext {
         }
 
         stack.push(invocation);
+        PREVIOUS.set(invocation);
         map.put(invocation.id, invocation);
         ParamInfo p = new ParamInfo();
         p.args = args;
@@ -91,8 +96,13 @@ public class InvocationContext {
     }
 
     public void pop(String rule, Object[] args, Object returnValue, Throwable exception) {
-
-
+        Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
+        if (stack == null) {
+            //impossible
+            stack = new Stack<>();
+            STACK_THREAD_LOCAL.set(stack);
+        }
+        LOGGER.error("pop@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
         if (exception != null) {
             exception.printStackTrace();
             System.exit(1);

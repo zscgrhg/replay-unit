@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Data
@@ -18,7 +19,7 @@ public class Invocation {
     public Map<Object, String> refMap;
     public String method;
     public String methodSignure;
-    public List<Invocation> children = new ArrayList<>();
+    public final List<Invocation> children = new CopyOnWriteArrayList<>();
     @JsonIgnore
     public Object thisRef;
     public String refPath;
