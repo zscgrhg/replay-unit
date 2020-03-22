@@ -12,5 +12,5 @@ invocation.setMethodSignure("{{methodSignure}}");
 invocation.setThisRef($0);
 invocation.setClazz($0==null?{{className}}.class:$0.getClass());
 com.etz.replay.unit.classmap.SubjectContext.saveObjectsRef($0,"{{methodSignure}}",_args);
-currentInvocationContext.push("{{methodSignure}}",invocation,_args);
+currentInvocationContext.push("{{methodSignure}}",invocation,{{argsType}},_args);
 ENDRULE

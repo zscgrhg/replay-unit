@@ -67,8 +67,9 @@ public class InvocationContext {
         return false;
     }
 
-    public void push(String rule, Invocation invocation, Object[] args) {
+    public void push(String rule, Invocation invocation, Class<?>[] parameterTypes, Object[] args) {
         Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
+
         if (stack == null) {
             stack = new Stack<>();
             STACK_THREAD_LOCAL.set(stack);
@@ -91,12 +92,14 @@ public class InvocationContext {
         map.put(invocation.id, invocation);
         ParamInfo p = new ParamInfo();
         p.args = args;
+        p.argsType = parameterTypes;
+        p.valuesType = ParamInfo.valuesTypeOf(parameterTypes, args);
         p.invocationId = invocation.id;
         p.name = "in";
         paramWriter.write(p);
     }
 
-    public void pop(String rule, Object[] args, Object returnValue, Throwable exception) {
+    public void pop(String rule, Class<?>[] parameterTypes, Object[] args, Class reType, Object returnValue, Throwable exception) {
         Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
         if (stack == null) {
             //impossible
@@ -110,16 +113,19 @@ public class InvocationContext {
         }
         Invocation pop = stack.pop();
         pop.finished = true;
-        ParamInfo atExit = new ParamInfo();
-        atExit.invocationId = pop.id;
-        atExit.args = args;
-        atExit.returned = returnValue;
-        atExit.thrown = exception;
+        ParamInfo p = new ParamInfo();
+        p.invocationId = pop.id;
+        p.args = args;
+        p.argsType = parameterTypes;
+        p.valuesType = ParamInfo.valuesTypeOf(parameterTypes, args);
+        p.returned = returnValue;
+        p.returnedValueType = ParamInfo.typeOf(reType, returnValue);
+        p.thrown = exception;
         if (exception != null) {
-            atExit.exception = exception.getClass().getName();
+            p.exception = exception.getClass().getName();
         }
-        atExit.name = "out";
-        paramWriter.write(atExit);
+        p.name = "out";
+        paramWriter.write(p);
         if (stack.isEmpty()) {
             paramWriter.write(this);
             CONTEXT.remove();
