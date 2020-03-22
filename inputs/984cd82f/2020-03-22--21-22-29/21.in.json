@@ -1,19 +1,16 @@
 {
-  "invocationId": 3,
+  "invocationId": 21,
   "args": [
-    "t1",
-    "x",
-    4
+    {
+      "fieldFromX": null,
+      "dataFromX": null
+    }
   ],
   "valuesType": [
-    "java.lang.String",
-    "java.lang.String",
-    "int"
+    "com.etz.replay.unit.targets.DataX"
   ],
   "argsType": [
-    "java.lang.String",
-    "java.lang.String",
-    "int"
+    "com.etz.replay.unit.targets.DataX"
   ],
   "name": "in",
   "returned": null,

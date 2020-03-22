@@ -79,10 +79,10 @@ public class InvocationContext {
         Invocation prev = PREVIOUS.get();
         if (prev != null) {
             invocation.parentId = prev.id;
-            if (!prev.finished) {
+           /* if (!prev.finished) {
                 prev.getChildren().add(invocation);
-            }
-
+            }*/
+            prev.getChildren().add(invocation);
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
@@ -110,7 +110,7 @@ public class InvocationContext {
         LOGGER.error("pop@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
 
         Invocation pop = stack.pop();
-        pop.finished = true;
+
 
         ParamInfo p = new ParamInfo();
         p.invocationId = pop.id;
@@ -125,6 +125,7 @@ public class InvocationContext {
         }
         p.name = "out";
         paramWriter.write(p);
+        pop.finished = true;
         if (stack.isEmpty()) {
             paramWriter.write(this);
             CONTEXT.remove();

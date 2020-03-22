@@ -5,7 +5,10 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class ServiceAImpl implements ServiceA {
@@ -30,10 +33,10 @@ public class ServiceAImpl implements ServiceA {
             LOGGER.error(">>>" + i);
         }).mapToObj(i -> new DataX())).get().collect(Collectors.toList());*/
 
-       /* List<DataX> fx = IntStream.range(1, 10).parallel().peek(i -> {
+        List<DataX> fx = IntStream.range(1, 10).parallel().peek(i -> {
             LOGGER.error(">>>" + i);
         }).mapToObj(i -> providerX.makeX(p1, "x", i)).collect(Collectors.toList());
-        serviceData.dataX = fx.get(1);*/
+        serviceData.dataX = fx.get(1);
         serviceData.fromServiceB = serviceB.doServiceB(new DataX());
         serviceData.fromServiceC = serviceC.doServiceC(p2);
         return serviceData;

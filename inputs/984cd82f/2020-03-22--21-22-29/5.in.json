@@ -1,12 +1,18 @@
 {
   "invocationId": 5,
   "args": [
-    1
+    "t1",
+    "x",
+    8
   ],
   "valuesType": [
+    "java.lang.String",
+    "java.lang.String",
     "int"
   ],
   "argsType": [
+    "java.lang.String",
+    "java.lang.String",
     "int"
   ],
   "name": "in",

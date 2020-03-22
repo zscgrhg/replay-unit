@@ -1,20 +1,26 @@
 {
   "invocationId": 3,
   "args": [
-    {
-      "fieldFromX": null,
-      "dataFromX": null
-    }
+    "t1",
+    "x",
+    4
   ],
   "valuesType": [
-    "com.etz.replay.unit.targets.DataX"
+    "java.lang.String",
+    "java.lang.String",
+    "int"
   ],
   "argsType": [
-    "com.etz.replay.unit.targets.DataX"
+    "java.lang.String",
+    "java.lang.String",
+    "int"
   ],
   "name": "out",
-  "returned": "null<>null",
-  "returnedValueType": "java.lang.String",
+  "returned": {
+    "fieldFromX": "t1",
+    "dataFromX": "x"
+  },
+  "returnedValueType": "com.etz.replay.unit.targets.DataX",
   "thrown": null,
   "exception": null
 }

@@ -14,7 +14,10 @@
   ],
   "name": "out",
   "returned": {
-    "dataX": null,
+    "dataX": {
+      "fieldFromX": "t1",
+      "dataFromX": "x"
+    },
     "fromServiceB": "null<>null",
     "fromServiceC": 1
   },
