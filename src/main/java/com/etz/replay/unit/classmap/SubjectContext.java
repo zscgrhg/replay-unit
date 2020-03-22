@@ -28,7 +28,7 @@ public class SubjectContext {
     @SneakyThrows
     public static void saveObjectsRef(Object subject, String methodSignure, Object[] args) {
         Class<?> aClass = subject.getClass();
-        boolean isSubject = SUBJECT_CLASS_CONTEXT.containsKey(aClass);
+        boolean isSubject = isSubject(aClass);
         if (isSubject) {
             SubjectInfo subjectInfo = new SubjectInfo();
             subjectInfo.setSubject(subject);
@@ -66,7 +66,7 @@ public class SubjectContext {
 
     public static void cleanObjectsRef(Object subject) {
         Class<?> aClass = subject.getClass();
-        boolean isSubject = SUBJECT_CLASS_CONTEXT.containsKey(aClass);
+        boolean isSubject = isSubject(aClass);
 
         if (isSubject) {
             Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
@@ -162,7 +162,7 @@ public class SubjectContext {
     }
 
     public static boolean isSubject(Class clazz) {
-        return SUBJECT_CLASS_CONTEXT.containsKey(clazz);
+        return tss.select(clazz);
     }
 
 

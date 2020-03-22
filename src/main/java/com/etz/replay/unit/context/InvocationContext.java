@@ -49,7 +49,6 @@ public class InvocationContext {
         if (length > prev) {
             ENTRY_COUNTER.set(length);
             EXIT_COUNTER.set(Integer.MAX_VALUE);
-            LOGGER.error(rule + " entryIncr");
             return true;
         }
         return false;
@@ -59,7 +58,6 @@ public class InvocationContext {
 
         long prev = EXIT_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
-        LOGGER.error(rule + " entryMinus:" + prev + "/" + length + "@" + id);
         if (length < prev) {
             EXIT_COUNTER.set(length);
             ENTRY_COUNTER.set(Integer.MIN_VALUE);
@@ -69,7 +67,6 @@ public class InvocationContext {
     }
 
     public void push(Invocation invocation, Object[] args) {
-        LOGGER.error("entry stack");
         boolean subject = SubjectContext.isSubject(invocation.getClazz());
         if (!stack.isEmpty()) {
             Invocation parent = stack.lastElement();
@@ -92,7 +89,7 @@ public class InvocationContext {
 
     public void pop(String rule, Object[] args, Object returnValue, Throwable exception) {
 
-        LOGGER.error("POP>>" + rule);
+
         if (exception != null) {
             exception.printStackTrace();
             System.exit(1);

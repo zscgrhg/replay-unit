@@ -7,6 +7,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,7 +27,7 @@ public class ParamWriterImpl implements ParamWriter {
         Properties p = new Properties();
         p.load(ParamWriterImpl.class.getClassLoader().getResourceAsStream("git.properties"));
         return p.getProperty("git.commit.id.abbrev") + "/"
-                + p.getProperty("git.build.time");
+                + new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss").format(new Date());
     }
 
     @Override

@@ -24,7 +24,7 @@ public class App {
 
         TimeUnit.SECONDS.sleep(3);
         ServiceA serviceA = new ServiceAImpl();
-        List<ServiceData> collect = IntStream.range(1, 5).parallel().mapToObj(x -> {
+        List<ServiceData> collect = IntStream.range(1, 2).parallel().mapToObj(x -> {
             ServiceData serviceData = serviceA.doServiceA("t" + x, x);
             System.out.println(JsonUtil.toJsonString(serviceData));
             return serviceData;
