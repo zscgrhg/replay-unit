@@ -84,10 +84,10 @@ public class SpecFactory {
             JsonNode value = argsDataArr.get(i);
             JsonNode ty = valueArray.get(i);
             String text = ty.asText();
-            if (!text.contains(".")) {
+            if (value.isTextual()) {
+                argsModels.add(MustacheRuleUtil.render("'{{0}}'  ", value.asText()));
+            } else if (value.isValueNode()) {
                 argsModels.add(MustacheRuleUtil.render("{{0}}", value.asText()));
-            } else if (CharSequence.class.isAssignableFrom(Class.forName(text))) {
-                argsModels.add(MustacheRuleUtil.render("'{{0}}' as {{1}}", value.asText(), text));
             } else {
                 argsModels.add("[");
                 Iterator<String> names = value.fieldNames();
