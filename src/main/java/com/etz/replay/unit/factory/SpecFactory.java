@@ -4,20 +4,18 @@ import com.etz.replay.unit.bm.MustacheRuleUtil;
 import com.etz.replay.unit.context.Invocation;
 import com.etz.replay.unit.context.JsonUtil;
 import com.etz.replay.unit.context.ParamInfo;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.mustachejava.Mustache;
 import lombok.SneakyThrows;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.file.Files;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.etz.replay.unit.context.JsonUtil.BASE;
 
 public class SpecFactory {
 
@@ -69,12 +67,43 @@ public class SpecFactory {
 
     @SneakyThrows
     public static void main(String[] args) {
-        File subjectJson = BASE.resolve("1.subject.json").toFile();
+        /*File subjectJson = BASE.resolve("1.subject.json").toFile();
 
         SpecModel specModel = buildFromJson(subjectJson);
         String x = MustacheRuleUtil.renderSpec(specModel);
         System.out.println(x);
-        Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);*/
+        JsonNode jsonNode = JsonUtil.readJsonNode(5L);
+        JsonNode argsData = jsonNode.get("args");
+        ArrayNode argsDataArr = (ArrayNode) argsData;
+        JsonNode valuesType = jsonNode.get("valuesType");
+        ArrayNode valueArray = (ArrayNode) valuesType;
+        List<String> argsModels = new ArrayList<>();
+        for (int i = 0; i < valuesType.size(); i++) {
 
+            JsonNode value = argsDataArr.get(i);
+            JsonNode ty = valueArray.get(i);
+            String text = ty.asText();
+            if (!text.contains(".")) {
+                argsModels.add(MustacheRuleUtil.render("{{0}}", value.asText()));
+            } else if (CharSequence.class.isAssignableFrom(Class.forName(text))) {
+                argsModels.add(MustacheRuleUtil.render("'{{0}}' as {{1}}", value.asText(), text));
+            } else {
+                argsModels.add("[");
+                Iterator<String> names = value.fieldNames();
+                while (names.hasNext()) {
+                    String next = names.next();
+                    argsModels.add(MustacheRuleUtil.render("{{0}}:'{{1}}'", next, value.get(next).asText()));
+                }
+                argsModels.add(MustacheRuleUtil.render("] as {{0}}", text));
+            }
+        }
+
+
+        StringWriter sw = new StringWriter();
+        Mustache mustache = MustacheRuleUtil.mf.compile("btm/inputs.mustache");
+        mustache.execute(sw, Collections.singletonMap("Inputs", argsModels));
+        sw.flush();
+        System.out.println(sw.toString());
     }
 }

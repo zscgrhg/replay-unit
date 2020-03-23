@@ -15,4 +15,17 @@ when:
 then:
 {{assertDecl}}
 }
+
+static class Inputs{
+def args=[
+{{#Inputs}}
+    {{.}}
+{{/Inputs}}
+]
+}
+
+static class Outputs{
+def args=[]
+}
+
 }

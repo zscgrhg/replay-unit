@@ -3,12 +3,17 @@
   "args": [
     "t1",
     "x",
-    8
+    8,
+    {
+      "fieldFromX": "t1",
+      "dataFromX": "x"
+    }
   ],
   "valuesType": [
     "java.lang.String",
     "java.lang.String",
-    "int"
+    "int",
+    "com.etz.replay.unit.targets.DataX"
   ],
   "argsType": [
     "java.lang.String",

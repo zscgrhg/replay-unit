@@ -1,5 +1,6 @@
 package com.etz.replay.unit.context;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.SneakyThrows;
@@ -43,5 +44,18 @@ public class JsonUtil {
         Object obj = mapper.readerFor(returnedValueType).readValue(s);
         paramInfo.returned = obj;
         return paramInfo;
+    }
+
+    @SneakyThrows
+    public static Class readFromString(String className) {
+        return mapper.reader(Class.class).readValue(className);
+    }
+
+    @SneakyThrows
+    public static JsonNode readJsonNode(Long invocationId) {
+        Path input = BASE.resolve(invocationId + ".in.json");
+        byte[] bytes = Files.readAllBytes(input);
+        JsonNode jsonNode = mapper.readTree(bytes);
+        return jsonNode;
     }
 }

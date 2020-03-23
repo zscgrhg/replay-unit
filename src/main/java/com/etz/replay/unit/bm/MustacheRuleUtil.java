@@ -1,6 +1,5 @@
 package com.etz.replay.unit.bm;
 
-import com.etz.replay.unit.context.JsonUtil;
 import com.etz.replay.unit.factory.SpecModel;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -129,6 +128,6 @@ public class MustacheRuleUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(JsonUtil.toJsonString(wrapperExecute()));
+
     }
 }
