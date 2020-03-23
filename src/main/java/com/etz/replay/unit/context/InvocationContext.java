@@ -20,6 +20,7 @@ public class InvocationContext {
 
     public final static TransmittableThreadLocal<Invocation> PREVIOUS = new TransmittableThreadLocal<>();
     public static final AtomicLong CXT_INCR = new AtomicLong(1);
+    public final static ThreadLocal<Invocation> STAGED = new ThreadLocal<>();
     public final static ThreadLocal<InvocationContext> CONTEXT = new ThreadLocal<>();
     public final static ThreadLocal<Stack<Invocation>> STACK_THREAD_LOCAL = new ThreadLocal<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(InvocationContext.class);
@@ -67,6 +68,10 @@ public class InvocationContext {
         return false;
     }
 
+    private static boolean checkTheadId(Invocation invocation) {
+        return invocation.threadId == Thread.currentThread().getId();
+    }
+
     public void push(String rule, Invocation invocation, Class<?>[] parameterTypes, Object[] args) {
         Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
 
@@ -74,14 +79,17 @@ public class InvocationContext {
             stack = new Stack<>();
             STACK_THREAD_LOCAL.set(stack);
         }
+        Invocation prevTTL = PREVIOUS.get();
+        if (prevTTL != null && !checkTheadId(prevTTL) && stack.isEmpty()) {
+            LOGGER.error("oops>>staged" + prevTTL);
+            STAGED.set(prevTTL);
+        }
+
         LOGGER.error("push@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
         boolean subject = SubjectContext.isSubject(invocation.getClazz());
         Invocation prev = PREVIOUS.get();
         if (prev != null) {
             invocation.parentId = prev.id;
-           /* if (!prev.finished) {
-                prev.getChildren().add(invocation);
-            }*/
             prev.getChildren().add(invocation);
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
@@ -126,14 +134,21 @@ public class InvocationContext {
         p.name = "out";
         paramWriter.write(p);
         pop.finished = true;
+
         if (stack.isEmpty()) {
             paramWriter.write(this);
             CONTEXT.remove();
+            PREVIOUS.remove();
+            Invocation prevTTL = STAGED.get();
+            if (prevTTL != null) {
+                STAGED.remove();
+                LOGGER.error("oops>>unstaged" + prevTTL);
+                PREVIOUS.set(prevTTL);
+            }
         } else {
             PREVIOUS.set(stack.lastElement());
         }
     }
-
 
     public List<Invocation> getNodes() {
         List<Invocation> root = map.values().stream().filter(Invocation::isSubject).collect(Collectors.toList());
