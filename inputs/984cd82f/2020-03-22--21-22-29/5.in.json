@@ -2,23 +2,39 @@
   "invocationId": 5,
   "args": [
     "t1",
-    "x",
-    8,
+    1,
     {
-      "fieldFromX": "t1",
-      "dataFromX": "x"
+      "fieldFromX": "fieldFromX",
+      "dataFromX": "dataFromX",
+      "dataY": {
+        "fieldFromY": null,
+        "dataFromY": null,
+        "dataZArr": [
+          {
+            "fieldFromZ": null,
+            "dataFromZ": null
+          },
+          {
+            "fieldFromZ": null,
+            "dataFromZ": null
+          },
+          {
+            "fieldFromZ": null,
+            "dataFromZ": null
+          }
+        ]
+      }
     }
   ],
   "valuesType": [
     "java.lang.String",
-    "java.lang.String",
-    "int",
+    "java.lang.Integer",
     "com.etz.replay.unit.targets.DataX"
   ],
   "argsType": [
     "java.lang.String",
-    "java.lang.String",
-    "int"
+    "java.lang.Integer",
+    "com.etz.replay.unit.targets.DataX"
   ],
   "name": "in",
   "returned": null,

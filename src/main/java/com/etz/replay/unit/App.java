@@ -4,9 +4,7 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import com.etz.replay.unit.bm.BMUtil;
 import com.etz.replay.unit.classmap.SubjectContext;
 import com.etz.replay.unit.context.JsonUtil;
-import com.etz.replay.unit.targets.ServiceA;
-import com.etz.replay.unit.targets.ServiceAImpl;
-import com.etz.replay.unit.targets.ServiceData;
+import com.etz.replay.unit.targets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +56,19 @@ public class App {
             ServiceData serviceData = serviceA.doServiceA("", 1);
         }*/
         SubjectContext.loadFromPkg(pkg);
-
+        DataX dataX = new DataX();
+        dataX.dataFromX = "dataFromX";
+        dataX.fieldFromX = "fieldFromX";
+        dataX.dataY = new DataY();
+        dataX.dataY.dataZArr = new DataZ[]{
+                new DataZ(),
+                new DataZ(),
+                new DataZ()
+        };
         TimeUnit.SECONDS.sleep(3);
         ServiceA serviceA = new ServiceAImpl();
         List<ServiceData> collect = IntStream.range(1, 2).parallel().mapToObj(x -> {
-            ServiceData serviceData = serviceA.doServiceA("t" + x, x);
+            ServiceData serviceData = serviceA.doServiceA("t" + x, x, dataX);
             System.out.println(JsonUtil.toJsonString(serviceData));
             return serviceData;
         }).collect(Collectors.toList());

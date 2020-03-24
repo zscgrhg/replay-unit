@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class DataZ {
-    String fieldFromZ;
-    String dataFromZ;
+    public String fieldFromZ;
+    public String dataFromZ;
 }

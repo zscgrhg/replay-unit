@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -62,12 +63,13 @@ public class SpecFactory {
 
     public static String buildAssert(Invocation invocation) {
         ParamInfo paramInfo = JsonUtil.readRetValuesFrom(invocation.id);
+
         return MustacheRuleUtil.render("ret == JsonUtil.readRetValuesFrom({{0}}).returned", invocation.id);
     }
 
-    @SneakyThrows
-    public static void main(String[] args) {
-        /*File subjectJson = BASE.resolve("1.subject.json").toFile();
+
+    public static void test1() {
+         /*File subjectJson = BASE.resolve("1.subject.json").toFile();
 
         SpecModel specModel = buildFromJson(subjectJson);
         String x = MustacheRuleUtil.renderSpec(specModel);
@@ -105,5 +107,78 @@ public class SpecFactory {
         mustache.execute(sw, Collections.singletonMap("Inputs", argsModels));
         sw.flush();
         System.out.println(sw.toString());
+    }
+
+    public static List<LineModel> buildArgsLine(JsonNode paramInfoJson) {
+        List<LineModel> llm = new ArrayList<>();
+        llm.add(new LineModel("def args = ["));
+        JsonNode args = paramInfoJson.get("args");
+        ArrayNode argValues = (ArrayNode) args;
+        JsonNode vt = paramInfoJson.get("valuesType");
+        ArrayNode vtArr = (ArrayNode) vt;
+
+        if (argValues != null && argValues.size() > 0) {
+            for (int i = 0; i < argValues.size(); i++) {
+                llm.addAll(buildArgDef(null, argValues.get(i), vtArr.get(i).asText()));
+            }
+
+        }
+        llm.add(new LineModel("]"));
+        return llm;
+    }
+
+    @SneakyThrows
+    public static List<LineModel> buildArgDef(String name, JsonNode value, String clazz) {
+
+        List<LineModel> defs = new ArrayList<>();
+        if (value.isArray()) {
+            defs.add(new PropLineModel(name, "[", null));
+            ArrayNode vArr = (ArrayNode) value;
+            for (int i = 0; i < vArr.size(); i++) {
+                defs.addAll(buildArgDef(null, vArr.get(i), Class.forName(clazz).getComponentType().getName()));
+            }
+            defs.add(new PropLineModel("]"));
+            return defs;
+        } else if (value == null) {
+            defs.add(new PropLineModel(name, "null"));
+        } else if (value.isTextual()) {
+            String line = MustacheRuleUtil.render("'{{0}}'  ", value.asText());
+            defs.add(new PropLineModel(name, line));
+        } else if (value.isValueNode()) {
+            String vnLine = MustacheRuleUtil.render("{{0}}", value.asText());
+            defs.add(new PropLineModel(name, vnLine));
+        } else {
+            assert value.isObject();
+            defs.add(new PropLineModel(name, "[", null));
+            Iterator<String> names = value.fieldNames();
+            while (names.hasNext()) {
+                String nextName = names.next();
+                JsonNode subNode = value.get(nextName);
+                Class fieldType = findFieldType(Class.forName(clazz), nextName);
+                defs.addAll(buildArgDef(nextName, subNode, fieldType.getName()));
+            }
+            String ObjectEndLine = MustacheRuleUtil.render("] as {{0}}", clazz);
+            defs.add(new PropLineModel(ObjectEndLine));
+        }
+        return defs;
+    }
+
+    public static Class findFieldType(Class clazz, String name) {
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.getName().equals(name)) {
+                return field.getType();
+            }
+        }
+        return null;
+    }
+
+    @SneakyThrows
+    public static void main(String[] args) {
+        JsonNode jsonNode = JsonUtil.readJsonNode(5L);
+        List<LineModel> lineModels = buildArgsLine(jsonNode);
+        System.out.println(MustacheRuleUtil.buildRule("btm/fdef.mustache", Collections.singletonMap("lines", lineModels)));
+
     }
 }

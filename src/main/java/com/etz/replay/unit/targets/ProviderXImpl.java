@@ -10,6 +10,12 @@ public class ProviderXImpl implements ProviderX {
         DataX dataX = new DataX();
         dataX.dataFromX = dataFromX;
         dataX.fieldFromX = fieldFromX;
+        dataX.dataY = new DataY();
+        dataX.dataY.dataZArr = new DataZ[]{
+                new DataZ(),
+                new DataZ(),
+                new DataZ()
+        };
         return dataX;
     }
 }

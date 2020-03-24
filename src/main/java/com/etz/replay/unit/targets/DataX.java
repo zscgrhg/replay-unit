@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DataX {
-    String fieldFromX;
-    String dataFromX;
+    public String fieldFromX;
+    public String dataFromX;
+    public DataY dataY;
 }

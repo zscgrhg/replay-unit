@@ -27,7 +27,7 @@ public class ServiceAImpl implements ServiceA {
 
     @Override
     @SneakyThrows
-    public ServiceData doServiceA(String p1, Integer p2) {
+    public ServiceData doServiceA(String p1, Integer p2, DataX p3) {
         ServiceData serviceData = new ServiceData();
         /*List<DataX> fx = forkJoinPool.submit(() -> IntStream.range(1, 300).parallel().peek(i -> {
             LOGGER.error(">>>" + i);

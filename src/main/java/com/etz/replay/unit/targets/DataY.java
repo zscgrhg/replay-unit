@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DataY {
-    String fieldFromY;
-    String dataFromY;
+    public String fieldFromY;
+    public String dataFromY;
+    public DataZ[] dataZArr;
 }
