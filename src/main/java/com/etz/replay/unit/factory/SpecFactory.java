@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SpecFactory {
@@ -119,7 +120,7 @@ public class SpecFactory {
 
         if (argValues != null && argValues.size() > 0) {
             for (int i = 0; i < argValues.size(); i++) {
-                llm.addAll(buildArgDef(null, argValues.get(i), vtArr.get(i).asText()));
+                llm.addAll(buildArgDef(1, null, argValues.get(i), vtArr.get(i).asText()));
             }
 
         }
@@ -128,37 +129,38 @@ public class SpecFactory {
     }
 
     @SneakyThrows
-    public static List<LineModel> buildArgDef(String name, JsonNode value, String clazz) {
-
+    public static List<LineModel> buildArgDef(int ident, String name, JsonNode value, String clazz) {
+        ident++;
+        String identStr = IntStream.range(0, ident).mapToObj(i -> "\t").collect(Collectors.joining());
         List<LineModel> defs = new ArrayList<>();
         if (value.isArray()) {
-            defs.add(new PropLineModel(name, "[", null));
+            defs.add(new PropLineModel(identStr, name, "[", null));
             ArrayNode vArr = (ArrayNode) value;
             for (int i = 0; i < vArr.size(); i++) {
-                defs.addAll(buildArgDef(null, vArr.get(i), Class.forName(clazz).getComponentType().getName()));
+                defs.addAll(buildArgDef(ident, null, vArr.get(i), Class.forName(clazz).getComponentType().getName()));
             }
-            defs.add(new PropLineModel("]"));
+            defs.add(new PropLineModel(identStr, null, "]"));
             return defs;
         } else if (value == null) {
-            defs.add(new PropLineModel(name, "null"));
+            defs.add(new PropLineModel(identStr, name, "null"));
         } else if (value.isTextual()) {
             String line = MustacheRuleUtil.render("'{{0}}'  ", value.asText());
-            defs.add(new PropLineModel(name, line));
+            defs.add(new PropLineModel(identStr, name, line));
         } else if (value.isValueNode()) {
             String vnLine = MustacheRuleUtil.render("{{0}}", value.asText());
-            defs.add(new PropLineModel(name, vnLine));
+            defs.add(new PropLineModel(identStr, name, vnLine));
         } else {
             assert value.isObject();
-            defs.add(new PropLineModel(name, "[", null));
+            defs.add(new PropLineModel(identStr, name, "[", null));
             Iterator<String> names = value.fieldNames();
             while (names.hasNext()) {
                 String nextName = names.next();
                 JsonNode subNode = value.get(nextName);
                 Class fieldType = findFieldType(Class.forName(clazz), nextName);
-                defs.addAll(buildArgDef(nextName, subNode, fieldType.getName()));
+                defs.addAll(buildArgDef(ident, nextName, subNode, fieldType.getName()));
             }
             String ObjectEndLine = MustacheRuleUtil.render("] as {{0}}", clazz);
-            defs.add(new PropLineModel(ObjectEndLine));
+            defs.add(new PropLineModel(identStr, null, ObjectEndLine));
         }
         return defs;
     }

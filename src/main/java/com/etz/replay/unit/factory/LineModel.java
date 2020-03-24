@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class LineModel {
+    String ident;
     String text;
     String sp;
 
@@ -12,6 +13,12 @@ public class LineModel {
     }
 
     public LineModel(String text, String sp) {
+        this.text = text;
+        this.sp = sp;
+    }
+
+    public LineModel(String ident, String text, String sp) {
+        this.ident = ident;
         this.text = text;
         this.sp = sp;
     }

@@ -1,5 +1,3 @@
-package com.etz
-
 def args = [
 		't1',
 		1,
