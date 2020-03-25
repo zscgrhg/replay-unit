@@ -8,14 +8,11 @@ import com.etz.replay.unit.targets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class App {
     public static final TransmittableThreadLocal<Stack<Integer>> SUBJECT_REFS_CONTEXT = new TransmittableThreadLocal<>();
@@ -67,10 +64,6 @@ public class App {
         };
         TimeUnit.SECONDS.sleep(3);
         ServiceA serviceA = new ServiceAImpl();
-        List<ServiceData> collect = IntStream.range(1, 2).parallel().mapToObj(x -> {
-            ServiceData serviceData = serviceA.doServiceA("t" + x, x, dataX);
-            System.out.println(JsonUtil.toJsonString(serviceData));
-            return serviceData;
-        }).collect(Collectors.toList());
+        serviceA.doServiceA2("t", 1, dataX);
     }
 }

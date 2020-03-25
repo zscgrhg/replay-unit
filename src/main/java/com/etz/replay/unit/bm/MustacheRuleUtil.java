@@ -9,6 +9,7 @@ import org.jboss.byteman.agent.submit.ScriptText;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,16 @@ public class MustacheRuleUtil {
     public static List<ScriptText> buildRuleForClass(Class clazz) {
         Method[] methods = clazz.getDeclaredMethods();
         return Stream.of(methods)
+                .filter(m -> {
+                    //不拦截私有方法和静态方法
+                    int modifiers = m.getModifiers();
+                    boolean isStatic = Modifier.isStatic(modifiers);
+                    boolean isPrivate = Modifier.isPrivate(modifiers);
+                    if (isStatic || isPrivate) {
+                        return false;
+                    }
+                    return true;
+                })
                 .map(m -> new RuleScope(clazz, m))
                 .flatMap(r -> Stream.of(buildEntryRule(r), buildExceptionRule(r), buildExitRule(r)))
                 .collect(Collectors.toList());

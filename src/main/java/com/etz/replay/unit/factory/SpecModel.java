@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Data
 public class SpecModel {
+    Long id;
     String fileName;
     String name;
     String method;

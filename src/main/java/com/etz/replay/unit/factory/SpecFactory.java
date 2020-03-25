@@ -33,8 +33,9 @@ public class SpecFactory {
 
         SpecModel specModel = new SpecModel();
         specModel.name = clazz.getSimpleName();
-        specModel.fileName = specModel.name + "Spec.groovy";
+        specModel.id = subjectInvocation.id;
         specModel.method = method;
+        specModel.fileName = specModel.name + method + specModel.id + "Spec.groovy";
         specModel.subjectDecl = MustacheRuleUtil.render("def subject = new {{0}}()", clazz.getName());
 
 
@@ -64,15 +65,15 @@ public class SpecFactory {
             List<String> mockBlock = mapInv.entrySet().stream().flatMap(e -> buildMockBlock(e).stream()).collect(Collectors.toList());
 
             specModel.mockDecl = mockBlock;
-            trim(inputs);
-            trim(outputs);
-            trim(returned);
-            specModel.Inputs = inputs.entrySet();
-            specModel.Outputs = outputs.entrySet();
-            specModel.Returned = returned.entrySet();
+
         }
 
-
+        trim(inputs);
+        trim(outputs);
+        trim(returned);
+        specModel.Inputs = inputs.entrySet();
+        specModel.Outputs = outputs.entrySet();
+        specModel.Returned = returned.entrySet();
         specModel.action = buildWhen(subjectInvocation);
         specModel.assertDecl = buildAssert(subjectInvocation);
         return specModel;
@@ -234,11 +235,17 @@ public class SpecFactory {
         List<LineModel> lineModels = buildArgsLine(jsonNode);
         lineModels.get(lineModels.size()-1).sp=null;
         System.out.println(MustacheRuleUtil.buildRule("btm/fdef.mustache", Collections.singletonMap("lines", lineModels)));*/
-        File subjectJson = JsonUtil.BASE.resolve("1.subject.json").toFile();
 
-        SpecModel specModel = buildFromJson(subjectJson);
-        String x = MustacheRuleUtil.renderSpec(specModel);
-        System.out.println(x);
-        Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);
+        File[] subjects = JsonUtil.BASE.toFile().listFiles(fn -> fn.getName().endsWith(".subject.json"));
+        for (File subjectJson : subjects) {
+
+            SpecModel specModel = buildFromJson(subjectJson);
+            String x = MustacheRuleUtil.renderSpec(specModel);
+            System.out.println(x);
+            Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);
+
+        }
+
+
     }
 }

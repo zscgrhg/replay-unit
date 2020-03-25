@@ -143,6 +143,7 @@ public class SubjectContext {
     }
 
     public static void parseMethod(Class clz, Method method) {
+
         Parameter[] parameters = method.getParameters();
         if (parameters == null) {
             return;

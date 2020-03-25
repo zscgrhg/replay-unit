@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class JsonUtil {
-    public static final Path BASE = Paths.get("C:\\data\\replay-unit\\inputs\\984cd82f\\2020-03-22--21-22-29\\");
+    public static final Path BASE = Paths.get("C:\\data\\replay-unit\\data\\853186df\\2020-03-25--21-37-17");
     static ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
     @SneakyThrows
@@ -26,13 +26,6 @@ public class JsonUtil {
         return invocation;
     }
 
-    @SneakyThrows
-    public static ParamInfo readArgsFrom(Long invocationId) {
-        Path input = BASE.resolve(invocationId + ".in.json");
-        byte[] bytes = Files.readAllBytes(input);
-        ParamInfo paramInfo = mapper.readerFor(ParamInfo.class).readValue(bytes);
-        return paramInfo;
-    }
 
     @SneakyThrows
     public static ParamInfo readRetValuesFrom(Long invocationId) {
@@ -46,10 +39,6 @@ public class JsonUtil {
         return paramInfo;
     }
 
-    @SneakyThrows
-    public static Class readFromString(String className) {
-        return mapper.reader(Class.class).readValue(className);
-    }
 
     @SneakyThrows
     public static JsonNode readInJsonNode(Long invocationId) {
