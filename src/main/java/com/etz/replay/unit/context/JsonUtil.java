@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class JsonUtil {
-    public static final Path BASE = Paths.get("C:\\data\\replay-unit\\data\\853186df\\2020-03-25--22-39-41");
+    public static final Path BASE = Paths.get("C:\\data\\replay-unit\\data\\853186df\\2020-03-25--23-06-08");
     static ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
     @SneakyThrows

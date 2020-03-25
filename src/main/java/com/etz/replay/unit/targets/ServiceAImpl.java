@@ -41,6 +41,7 @@ public class ServiceAImpl implements ServiceA {
 
     @Override
     public ServiceData hello(String p1, Integer p2, DataX p3) {
+        System.out.println(p1);
         List<ServiceData> ret = IntStream.range(1, 3).parallel().mapToObj(i -> {
             ServiceData serviceData = new ServiceData();
 
