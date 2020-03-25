@@ -40,17 +40,17 @@ public class ServiceAImpl implements ServiceA {
     }
 
     @Override
-    public ServiceData doServiceA2(String p1, Integer p2, DataX p3) {
-        List<ServiceData> ret = IntStream.range(1, 3).mapToObj(i -> {
+    public ServiceData hello(String p1, Integer p2, DataX p3) {
+        List<ServiceData> ret = IntStream.range(1, 3).parallel().mapToObj(i -> {
             ServiceData serviceData = new ServiceData();
-            serviceData.fromServiceB = serviceB.doServiceB(new DataX());
+
             //嵌套并行有BUG
             List<DataX> fx = IntStream.range(1, 10).parallel().peek(x -> {
                 LOGGER.error(">>>" + i);
             }).mapToObj(y -> providerX.makeX(p1, "x", y)).collect(Collectors.toList());
 
             serviceData.dataX = fx.get(1);
-
+            serviceData.fromServiceB = serviceB.doServiceB(new DataX());
             serviceData.fromServiceC = serviceC.doServiceC(p2);
             return serviceData;
         }).collect(Collectors.toList());

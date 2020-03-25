@@ -64,6 +64,8 @@ public class App {
         };
         TimeUnit.SECONDS.sleep(3);
         ServiceA serviceA = new ServiceAImpl();
-        serviceA.doServiceA2("t", 1, dataX);
+
+        serviceA.doServiceA("t", 1, dataX);
+        serviceA.hello("t2", 2, dataX);
     }
 }
