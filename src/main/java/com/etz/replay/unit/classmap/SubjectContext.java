@@ -43,6 +43,11 @@ public class SubjectContext {
             }
 
             Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
+
+            ObjectInfoProtype thisRef = new ObjectInfoProtype();
+            thisRef.name = "this";
+            thisRef.type = ObjectInfoProtype.Type.FIELD;
+            refs.put(subject, thisRef);
             Set<Map.Entry<String, ObjectInfoProtype>> entries = refMap.entrySet();
             for (Map.Entry<String, ObjectInfoProtype> entry : entries) {
                 String key = entry.getKey();
