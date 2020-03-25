@@ -29,9 +29,11 @@ public class ServiceAImpl implements ServiceA {
     @SneakyThrows
     public ServiceData doServiceA(String p1, Integer p2, DataX p3) {
         ServiceData serviceData = new ServiceData();
+        List<DataX> fx = IntStream.range(1, 10).parallel().peek(i -> {
+            LOGGER.error(">>>" + i);
+        }).mapToObj(i -> providerX.makeX(p1, "x", i)).collect(Collectors.toList());
 
-
-        serviceData.dataX = abc(p1).get(1);
+        serviceData.dataX = fx.get(1);
         serviceData.fromServiceB = serviceB.doServiceB(new DataX());
         serviceData.fromServiceC = serviceC.doServiceC(p2);
         return serviceData;

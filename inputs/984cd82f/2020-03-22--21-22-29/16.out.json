@@ -3,7 +3,7 @@
   "args": [
     "t1",
     "x",
-    9
+    2
   ],
   "valuesType": [
     "java.lang.String",
@@ -18,7 +18,25 @@
   "name": "out",
   "returned": {
     "fieldFromX": "t1",
-    "dataFromX": "x"
+    "dataFromX": "x",
+    "dataY": {
+      "fieldFromY": null,
+      "dataFromY": null,
+      "dataZArr": [
+        {
+          "fieldFromZ": null,
+          "dataFromZ": null
+        },
+        {
+          "fieldFromZ": null,
+          "dataFromZ": null
+        },
+        {
+          "fieldFromZ": null,
+          "dataFromZ": null
+        }
+      ]
+    }
   },
   "returnedValueType": "com.etz.replay.unit.targets.DataX",
   "thrown": null,

@@ -16,16 +16,28 @@ then:
 {{assertDecl}}
 }
 
-static class Inputs{
-def args=[
-{{#Inputs}}
-    {{.}}
-{{/Inputs}}
-]
-}
 
-static class Outputs{
-def args=[]
-}
+{{#Inputs}}
+    static final def INPUTS{{key}}= [
+    {{#value}}
+        {{ident}}{{name}} {{#name}} : {{/name}} {{text}} {{sp}}
+    {{/value}}
+    ]
+{{/Inputs}}
+
+{{#Outputs}}
+    static final def OUTPUTS{{key}}= [
+    {{#value}}
+        {{ident}}{{name}} {{#name}} : {{/name}} {{text}} {{sp}}
+    {{/value}}
+    ]
+{{/Outputs}}
+
+{{#Returned}}
+    static final def RETURNED{{key}}= {{#value}}
+        {{ident}}{{name}} {{#name}} : {{/name}} {{text}} {{sp}}
+    {{/value}}
+{{/Returned}}
+
 
 }

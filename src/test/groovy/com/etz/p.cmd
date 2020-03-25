@@ -1,1 +1,0 @@
-groovyc -cp  C:\data\replay-unit\target\classes  T2.groovy

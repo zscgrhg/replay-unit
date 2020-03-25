@@ -52,8 +52,16 @@ public class JsonUtil {
     }
 
     @SneakyThrows
-    public static JsonNode readJsonNode(Long invocationId) {
+    public static JsonNode readInJsonNode(Long invocationId) {
         Path input = BASE.resolve(invocationId + ".in.json");
+        byte[] bytes = Files.readAllBytes(input);
+        JsonNode jsonNode = mapper.readTree(bytes);
+        return jsonNode;
+    }
+
+    @SneakyThrows
+    public static JsonNode readOutJsonNode(Long invocationId) {
+        Path input = BASE.resolve(invocationId + ".out.json");
         byte[] bytes = Files.readAllBytes(input);
         JsonNode jsonNode = mapper.readTree(bytes);
         return jsonNode;

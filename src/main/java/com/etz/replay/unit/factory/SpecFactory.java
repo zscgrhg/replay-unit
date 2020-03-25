@@ -3,21 +3,22 @@ package com.etz.replay.unit.factory;
 import com.etz.replay.unit.bm.MustacheRuleUtil;
 import com.etz.replay.unit.context.Invocation;
 import com.etz.replay.unit.context.JsonUtil;
-import com.etz.replay.unit.context.ParamInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.mustachejava.Mustache;
 import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class SpecFactory {
 
@@ -38,34 +39,79 @@ public class SpecFactory {
 
 
         List<Invocation> children = subjectInvocation.children;
+
+        Map<String, List<LineModel>> inputs = new HashMap<>();
+        Map<String, List<LineModel>> outputs = new HashMap<>();
+        Map<String, List<LineModel>> returned = new HashMap<>();
+
+        inputs.put(String.valueOf(subjectInvocation.id), buildArgsLine(JsonUtil.readInJsonNode(subjectInvocation.id)));
+        outputs.put(String.valueOf(subjectInvocation.id), buildArgsLine(JsonUtil.readOutJsonNode(subjectInvocation.id)));
+        returned.put(String.valueOf(subjectInvocation.id), buildRetLine(JsonUtil.readOutJsonNode(subjectInvocation.id)));
+
+
         if (!children.isEmpty()) {
-            List<String> mockDecl = children.stream().flatMap(SpecFactory::buildMock).collect(Collectors.toList());
-            specModel.mockDecl = mockDecl;
+
+            Map<String, List<Invocation>> mapInv = new HashMap<>();
+            for (Invocation child : children) {
+                inputs.put(String.valueOf(child.id), buildArgsLine(JsonUtil.readInJsonNode(child.id)));
+                outputs.put(String.valueOf(child.id), buildArgsLine(JsonUtil.readOutJsonNode(child.id)));
+                returned.put(String.valueOf(child.id), buildRetLine(JsonUtil.readOutJsonNode(child.id)));
+                String refPath = child.getRefPath();
+                mapInv.putIfAbsent(refPath, new ArrayList<>());
+                mapInv.get(refPath).add(child);
+            }
+
+            List<String> mockBlock = mapInv.entrySet().stream().flatMap(e -> buildMockBlock(e).stream()).collect(Collectors.toList());
+
+            specModel.mockDecl = mockBlock;
+            trim(inputs);
+            trim(outputs);
+            trim(returned);
+            specModel.Inputs = inputs.entrySet();
+            specModel.Outputs = outputs.entrySet();
+            specModel.Returned = returned.entrySet();
         }
-        String loadArgs = MustacheRuleUtil.render("def subjectArgs = JsonUtil.readArgsFrom({{0}}).args", subjectInvocation.id);
-        specModel.mockDecl.add(loadArgs);
+
+
         specModel.action = buildWhen(subjectInvocation);
         specModel.assertDecl = buildAssert(subjectInvocation);
         return specModel;
     }
 
-    public static Stream<String> buildMock(Invocation invocation) {
-        String mockRet = MustacheRuleUtil.render("def ret{{0}} = JsonUtil.readRetValuesFrom({{0}}).returned", invocation.id);
-        String mockAssign = MustacheRuleUtil.render("subject.{{0}}=Mock({{1}})", invocation.refPath, invocation.getClazz().getName());
-        String mockDel = MustacheRuleUtil.render("1 * subject.{{0}}.{{1}}(_) >> ret{{2}} ", invocation.refPath, invocation.method, invocation.id);
-
-        return Arrays.asList(mockRet, mockAssign, mockDel).stream();
+    public static void trim(Map<String, List<LineModel>> map) {
+        Collection<List<LineModel>> values = map.values();
+        for (List<LineModel> lineModels : values) {
+            if (lineModels != null && !lineModels.isEmpty()) {
+                lineModels.get(lineModels.size() - 1).sp = null;
+            }
+        }
     }
 
+    public static List<String> buildMockBlock(Map.Entry<String, List<Invocation>> invs) {
+        List<String> ret = new ArrayList<>();
+        List<Invocation> value = invs.getValue();
+        Class clazz = value.get(0).getClazz();
+        ret.add(MustacheRuleUtil.render("subject.{{0}}=Mock({{1}}){", invs.getKey(), clazz.getName()));
+        for (Invocation invocation : value) {
+            String args = invocation.getMethodSignure().replaceAll("^.*\\((.*?)\\)", "$1");
+            int length = args.split(",").length;
+            String argsLine = IntStream.range(0, length).mapToObj(i -> "{p" + i + "-> p" + i + "==INPUTS{{1}}[" + i + "]}").collect(Collectors.joining(","));
+            ret.add(MustacheRuleUtil.render("1 * {{0}}(" + argsLine + ") >> RETURNED{{1}} ", invocation.method, invocation.id));
+        }
+        ret.add("}");
+        return ret;
+    }
+
+
     public static String buildWhen(Invocation invocation) {
-        String action = MustacheRuleUtil.render("def ret=subject.{{0}}(*subjectArgs)", invocation.method, invocation.getClazz().getName());
+        String action = MustacheRuleUtil.render("def ret=subject.{{0}}(*INPUTS{{1}})", invocation.method, invocation.id);
         return action;
     }
 
     public static String buildAssert(Invocation invocation) {
-        ParamInfo paramInfo = JsonUtil.readRetValuesFrom(invocation.id);
 
-        return MustacheRuleUtil.render("ret == JsonUtil.readRetValuesFrom({{0}}).returned", invocation.id);
+
+        return MustacheRuleUtil.render("ret == RETURNED{{0}}", invocation.id);
     }
 
 
@@ -76,7 +122,7 @@ public class SpecFactory {
         String x = MustacheRuleUtil.renderSpec(specModel);
         System.out.println(x);
         Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);*/
-        JsonNode jsonNode = JsonUtil.readJsonNode(5L);
+        JsonNode jsonNode = JsonUtil.readInJsonNode(5L);
         JsonNode argsData = jsonNode.get("args");
         ArrayNode argsDataArr = (ArrayNode) argsData;
         JsonNode valuesType = jsonNode.get("valuesType");
@@ -110,21 +156,26 @@ public class SpecFactory {
         System.out.println(sw.toString());
     }
 
+    public static List<LineModel> buildRetLine(JsonNode paramInfoJson) {
+        List<LineModel> llm = new ArrayList<>();
+        JsonNode returned = paramInfoJson.get("returned");
+        JsonNode rvt = paramInfoJson.get("returnedValueType");
+        llm.addAll(buildArgDef(1, null, returned, rvt.asText()));
+        return llm;
+    }
+
     public static List<LineModel> buildArgsLine(JsonNode paramInfoJson) {
         List<LineModel> llm = new ArrayList<>();
-        llm.add(new LineModel("def args = ["));
         JsonNode args = paramInfoJson.get("args");
         ArrayNode argValues = (ArrayNode) args;
         JsonNode vt = paramInfoJson.get("valuesType");
         ArrayNode vtArr = (ArrayNode) vt;
-
         if (argValues != null && argValues.size() > 0) {
             for (int i = 0; i < argValues.size(); i++) {
                 llm.addAll(buildArgDef(1, null, argValues.get(i), vtArr.get(i).asText()));
             }
 
         }
-        llm.add(new LineModel("]"));
         return llm;
     }
 
@@ -176,11 +227,18 @@ public class SpecFactory {
         return null;
     }
 
+
     @SneakyThrows
     public static void main(String[] args) {
-        JsonNode jsonNode = JsonUtil.readJsonNode(5L);
+        /*JsonNode jsonNode = JsonUtil.readOutJsonNode(5L);
         List<LineModel> lineModels = buildArgsLine(jsonNode);
-        System.out.println(MustacheRuleUtil.buildRule("btm/fdef.mustache", Collections.singletonMap("lines", lineModels)));
+        lineModels.get(lineModels.size()-1).sp=null;
+        System.out.println(MustacheRuleUtil.buildRule("btm/fdef.mustache", Collections.singletonMap("lines", lineModels)));*/
+        File subjectJson = JsonUtil.BASE.resolve("1.subject.json").toFile();
 
+        SpecModel specModel = buildFromJson(subjectJson);
+        String x = MustacheRuleUtil.renderSpec(specModel);
+        System.out.println(x);
+        Files.copy(new ByteArrayInputStream(x.getBytes("UTF-8")), OUT.resolve(specModel.fileName), StandardCopyOption.REPLACE_EXISTING);
     }
 }
