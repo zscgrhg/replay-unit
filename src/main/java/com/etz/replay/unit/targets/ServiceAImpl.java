@@ -43,6 +43,7 @@ public class ServiceAImpl implements ServiceA {
     public List<ServiceData> doServiceA2(String p1, Integer p2, DataX p3) {
         List<ServiceData> ret = IntStream.range(1, 3).mapToObj(i -> {
             ServiceData serviceData = new ServiceData();
+            //嵌套并行有BUG
            /* List<DataX> fx = IntStream.range(1, 10).parallel().peek(x -> {
                 LOGGER.error(">>>" + i);
             }).mapToObj(y -> providerX.makeX(p1, "x", y)).collect(Collectors.toList());
