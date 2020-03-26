@@ -7,5 +7,4 @@ currentInvocationContext:com.etz.replay.unit.context.InvocationContext=com.etz.r
 IF currentInvocationContext!=null&&currentInvocationContext.entryMinus("{{methodSignure}}")
 DO   traceln("exception exit : {{className}}::{{methodSignure}}");
 currentInvocationContext.pop("{{methodSignure}}",{{argsType}},_args,{{reType}}.class,null,$^);
-com.etz.replay.unit.classmap.SubjectContext.cleanObjectsRef($0);
 ENDRULE

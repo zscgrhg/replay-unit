@@ -1,19 +1,19 @@
 package com.etz.replay.unit.classmap;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 import com.etz.replay.unit.bm.BMUtil;
 import com.etz.replay.unit.bm.MustacheRuleUtil;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SubjectContext {
@@ -21,83 +21,11 @@ public class SubjectContext {
             = LoggerFactory.getLogger(SubjectContext.class);
 
 
-    public static final Map<Class, Map<String, ObjectInfoProtype>> SUBJECT_CLASS_CONTEXT = new ConcurrentHashMap<>();
-    public static final TransmittableThreadLocal<Stack<SubjectInfo>> SUBJECT_REFS_CONTEXT = new TransmittableThreadLocal<>();
+    public static final Map<Class, Map<String, RefsInfo>> SUBJECT_CLASS_CONTEXT = new ConcurrentHashMap<>();
+
     static TestSubjectSelector tss = new DefaultTestSubjectSelectorImpl();
     static ProvidedSelector ps = new DefaultProvidedSelectorImpl();
 
-    @SneakyThrows
-    public static void saveObjectsRef(Object subject, String methodSignure, Object[] args) {
-        Class<?> aClass = subject.getClass();
-        boolean isSubject = isSubject(aClass);
-        if (isSubject) {
-            SubjectInfo subjectInfo = new SubjectInfo();
-            subjectInfo.setSubject(subject);
-            Map<String, ObjectInfoProtype> refMap = SUBJECT_CLASS_CONTEXT.get(aClass);
-            Map<String, Object> argMap = new HashMap<>();
-            if (args != null && args.length > 0) {
-
-                for (int i = 0; i < args.length; i++) {
-                    argMap.put(keyOfArgs(methodSignure, i), args[i]);
-                }
-            }
-
-            Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
-
-            ObjectInfoProtype thisRef = new ObjectInfoProtype();
-            thisRef.name = "this";
-            thisRef.type = ObjectInfoProtype.Type.FIELD;
-            refs.put(subject, thisRef);
-            Set<Map.Entry<String, ObjectInfoProtype>> entries = refMap.entrySet();
-            for (Map.Entry<String, ObjectInfoProtype> entry : entries) {
-                String key = entry.getKey();
-                ObjectInfoProtype value = entry.getValue();
-                if (value.type.equals(ObjectInfoProtype.Type.ARG)) {
-                    refs.put(argMap.get(key), value);
-                } else if (value.type.equals(ObjectInfoProtype.Type.FIELD)) {
-                    Field field = aClass.getDeclaredField(value.name);
-                    field.setAccessible(true);
-                    Object feildValue = field.get(subject);
-                    refs.put(feildValue, value);
-                }
-            }
-            Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
-            if (stack == null) {
-                stack = new Stack<>();
-                SUBJECT_REFS_CONTEXT.set(stack);
-            }
-            stack.push(subjectInfo);
-        }
-    }
-
-    public static void cleanObjectsRef(Object subject) {
-        Class<?> aClass = subject.getClass();
-        boolean isSubject = isSubject(aClass);
-
-        if (isSubject) {
-            Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
-            SubjectInfo subjectInfo = stack.lastElement();
-
-            if (stack != null) {
-                assert Objects.equals(subjectInfo.getSubject(), subject);
-                stack.pop();
-            }
-        }
-    }
-
-    public static String refPathOf(Object thisRef) {
-        Stack<SubjectInfo> stack = SUBJECT_REFS_CONTEXT.get();
-        if (stack != null && !stack.isEmpty()) {
-            SubjectInfo subjectInfo = stack.lastElement();
-            Map<Object, ObjectInfoProtype> refs = subjectInfo.getRefs();
-
-            ObjectInfoProtype protype = refs.get(thisRef);
-            if (protype != null) {
-                return protype.name;
-            }
-        }
-        return null;
-    }
 
     public static void loadFromPkg(String... pkg) {
 
@@ -122,9 +50,9 @@ public class SubjectContext {
 
                 for (Field field : fields) {
                     if (ps.selectField(clz, field)) {
-                        Map<String, ObjectInfoProtype> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
-                        ObjectInfoProtype obj = new ObjectInfoProtype();
-                        obj.setType(ObjectInfoProtype.Type.FIELD);
+                        Map<String, RefsInfo> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
+                        RefsInfo obj = new RefsInfo();
+                        obj.setType(RefsInfo.RefType.FIELD);
                         Class<?> type = field.getType();
                         BMUtil.submitText(MustacheRuleUtil.buildRuleForClass(type));
                         obj.setDeclaredType(type);
@@ -151,9 +79,9 @@ public class SubjectContext {
         for (int i = 0; i < parameters.length; i++) {
             Parameter param = parameters[i];
             if (ps.selectArg(clz, method, param)) {
-                Map<String, ObjectInfoProtype> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
-                ObjectInfoProtype obj = new ObjectInfoProtype();
-                obj.setType(ObjectInfoProtype.Type.ARG);
+                Map<String, RefsInfo> subMap = SUBJECT_CLASS_CONTEXT.get(clz);
+                RefsInfo obj = new RefsInfo();
+                obj.setType(RefsInfo.RefType.ARG);
                 Class<?> type = param.getType();
                 BMUtil.submitText(MustacheRuleUtil.buildRuleForClass(type));
                 obj.setDeclaredType(type);

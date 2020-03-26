@@ -43,7 +43,7 @@ public class InvocationContext {
     }
 
     public boolean entryIncr(String rule) {
-
+        LOGGER.error(">>>@@@>>>" + rule + ">>");
         long prev = ENTRY_COUNTER.get();
         int length = Thread.currentThread().getStackTrace().length;
         LOGGER.error(rule + ">>>" + prev + "/" + length + "@" + id);
@@ -73,6 +73,7 @@ public class InvocationContext {
     }
 
     public void push(String rule, Invocation invocation, Class<?>[] parameterTypes, Object[] args) {
+        LOGGER.error(">>>@@@" + invocation.method + ">>" + invocation.id);
         Stack<Invocation> stack = STACK_THREAD_LOCAL.get();
 
         if (stack == null) {
@@ -86,16 +87,20 @@ public class InvocationContext {
             STAGED.set(prevTTL);
         }
 
-        LOGGER.error("push@@@" + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
+        LOGGER.error("push@@@" + invocation.method + Thread.currentThread().getName() + ",stack=" + stack + ",rule=" + rule);
         boolean subject = SubjectContext.isSubject(invocation.getClazz());
         Invocation prev = PREVIOUS.get();
         if (prev != null) {
             invocation.parentId = prev.id;
+            invocation.parent = prev;
+            invocation.refPath = prev.refs.get(invocation.thisObject).name;
+            LOGGER.error(">>>@@@" + invocation.method + ">>" + invocation.id + "===" + prev.id);
             prev.getChildren().add(invocation);
             boolean notSubject = stack.stream().anyMatch(inv -> inv.identity(invocation));
             invocation.setSubject(!notSubject && subject);
         } else {
             invocation.setSubject(subject);
+            LOGGER.error(">>>@@@" + invocation.method + ">>" + invocation.id + "===");
         }
         stack.push(invocation);
         PREVIOUS.set(invocation);
