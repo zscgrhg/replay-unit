@@ -156,8 +156,9 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-verbose</arg>
                         <arg>-parameters</arg>
+                        <arg>-J-Xmx8g</arg>
+                        <arg>-J-Xms4g</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
@@ -255,6 +256,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M4</version>
                 <configuration>
+                    <argLine>-Xmx8g</argLine>
                     <useFile>false</useFile>
                     <includes>
                         <include>**/*Test.java</include>

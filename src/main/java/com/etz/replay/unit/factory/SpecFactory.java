@@ -16,13 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class SpecFactory {
 
-    public static final Path OUT = Paths.get("src\\test\\groovy\\com\\etz");
+    public static final Path OUT = Paths.get("src\\test\\groovy\\com\\etz")
+            .resolve("pkg" + new SimpleDateFormat("yyyyMMddHmmss").format(new Date()));
 
     static {
         File file = OUT.toFile();
