@@ -46,7 +46,7 @@ public class App {
 
         ForkJoinPool.ForkJoinWorkerThreadFactory forkJoinWorkerThreadFactory;
         BMUtil.loadAgent();
-        BMUtil.submitFile("C:\\data\\replay-unit\\src\\main\\resources\\btm\\exec.btm");
+        //BMUtil.submitFile("C:\\data\\replay-unit\\src\\main\\resources\\btm\\exec.btm");
 
 
        /* for (int i = 0; i < 10; i++) {
