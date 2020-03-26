@@ -43,6 +43,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         String pkg = "com.etz.replay.unit.targets";
+        System.out.println(pkg);
 
         ForkJoinPool.ForkJoinWorkerThreadFactory forkJoinWorkerThreadFactory;
         BMUtil.loadAgent();

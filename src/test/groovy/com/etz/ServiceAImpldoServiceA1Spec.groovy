@@ -7,10 +7,10 @@ class ServiceAImpldoServiceA1Spec extends Specification {
         given:
         def subject = new com.etz.replay.unit.targets.ServiceAImpl()
         subject.serviceB = Mock(com.etz.replay.unit.targets.ServiceBImpl) {
-            1 * doServiceB({ p0 -> p0 == INPUTS21[0] }) >> RETURNED21
+            1 * doServiceB(INPUTS21[0]) >> RETURNED21
         }
         subject.providerX = Mock(com.etz.replay.unit.targets.ProviderXImpl) {
-            1 * makeX({ p0 -> p0 == INPUTS3[0] }, { p1 -> p1 == INPUTS3[1] }, { p2 -> p2 == INPUTS3[2] }) >> RETURNED3
+            1 * makeX(INPUTS3[0], INPUTS3[1], { p2 -> p2 == INPUTS3[2] }) >> RETURNED3
             1 * makeX({ p0 -> p0 == INPUTS4[0] }, { p1 -> p1 == INPUTS4[1] }, { p2 -> p2 == INPUTS4[2] }) >> RETURNED4
             1 * makeX({ p0 -> p0 == INPUTS6[0] }, { p1 -> p1 == INPUTS6[1] }, { p2 -> p2 == INPUTS6[2] }) >> RETURNED6
             1 * makeX({ p0 -> p0 == INPUTS5[0] }, { p1 -> p1 == INPUTS5[1] }, { p2 -> p2 == INPUTS5[2] }) >> RETURNED5

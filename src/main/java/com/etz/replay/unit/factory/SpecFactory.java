@@ -105,7 +105,8 @@ public class SpecFactory {
         for (Invocation invocation : value) {
             String args = invocation.getMethodSignure().replaceAll("^.*\\((.*?)\\)", "$1");
             int length = args.split(",").length;
-            String argsLine = IntStream.range(0, length).mapToObj(i -> "{p" + i + "-> p" + i + "==INPUTS{{1}}[" + i + "]}").collect(Collectors.joining(","));
+            //String argsLine = IntStream.range(0, length).mapToObj(i -> "{p" + i + "-> p" + i + "==INPUTS{{1}}[" + i + "]}").collect(Collectors.joining(","));
+            String argsLine = IntStream.range(0, length).mapToObj(i -> "INPUTS{{1}}[" + i + "]").collect(Collectors.joining(","));
             ret.add(MustacheRuleUtil.render("1 * {{0}}(" + argsLine + ") >> RETURNED{{1}} ", invocation.method, invocation.id));
         }
         ret.add("}");
