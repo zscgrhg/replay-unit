@@ -12,7 +12,6 @@ import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 
 public class App {
     public static final TransmittableThreadLocal<Stack<Integer>> SUBJECT_REFS_CONTEXT = new TransmittableThreadLocal<>();
@@ -62,10 +61,13 @@ public class App {
                 new DataZ(),
                 new DataZ()
         };
-        TimeUnit.SECONDS.sleep(3);
-        ServiceA serviceA = new ServiceAImpl();
+        for (int i = 0; i < 10; i++) {
+            //TimeUnit.SECONDS.sleep(3);
+            ServiceA serviceA = new ServiceAImpl();
 
-        serviceA.doServiceA("t", 1, dataX);
-        serviceA.hello("t2", 2, dataX);
+            serviceA.doServiceA("t", 1, dataX);
+            //TimeUnit.SECONDS.sleep(3);
+            serviceA.hello("t2", 2, dataX);
+        }
     }
 }
