@@ -22,7 +22,14 @@ import java.util.stream.IntStream;
 
 public class SpecFactory {
 
-    public static final Path OUT = Paths.get("C:\\data\\replay-unit\\src\\test\\groovy\\com\\etz");
+    public static final Path OUT = Paths.get("src\\test\\groovy\\com\\etz");
+
+    static {
+        File file = OUT.toFile();
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+    }
 
     @SneakyThrows
     public static SpecModel buildFromJson(File subjectJson) {

@@ -2,12 +2,15 @@ package com.etz.replay.unit.factory;
 
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 @Data
 public class SpecModel {
+    String pkg = "pkg" + new SimpleDateFormat("yyyyMMddHmmss").format(new Date());
     Long id;
     String fileName;
     String name;

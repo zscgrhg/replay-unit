@@ -8,10 +8,9 @@ import lombok.SneakyThrows;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class JsonUtil {
-    public static final Path BASE = Paths.get("C:\\data\\replay-unit\\data\\853186df\\2020-03-26--21-08-14");
+    public static final Path BASE = ParamWriterImpl.workspace.toPath();
     static ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
     @SneakyThrows

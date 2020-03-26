@@ -4,14 +4,17 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import com.etz.replay.unit.bm.BMUtil;
 import com.etz.replay.unit.classmap.SubjectContext;
 import com.etz.replay.unit.context.JsonUtil;
+import com.etz.replay.unit.factory.SpecFactory;
 import com.etz.replay.unit.targets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 public class App {
     public static final TransmittableThreadLocal<Stack<Integer>> SUBJECT_REFS_CONTEXT = new TransmittableThreadLocal<>();
@@ -61,13 +64,18 @@ public class App {
                 new DataZ(),
                 new DataZ()
         };
-        for (int i = 0; i < 10; i++) {
+        TimeUnit.SECONDS.sleep(3);
+        for (int i = 0; i < 20; i++) {
             //TimeUnit.SECONDS.sleep(3);
             ServiceA serviceA = new ServiceAImpl();
 
-            serviceA.doServiceA("t", 1, dataX);
+            serviceA.doServiceA("t", new Random().nextInt(20), dataX);
             //TimeUnit.SECONDS.sleep(3);
-            serviceA.hello("t2", 2, dataX);
+            serviceA.hello("t2", new Random().nextInt(20), dataX);
+            serviceA.doServiceA("t", new Random().nextInt(20), dataX);
+            serviceA.hello("t2", new Random().nextInt(20), dataX);
         }
+
+        SpecFactory.main(null);
     }
 }
